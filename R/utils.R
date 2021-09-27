@@ -1,5 +1,6 @@
 # Define global functions or variables
-utils::globalVariables(paste("X", 1:60, sep = ""))
+utils::globalVariables(c(paste("X", 1:70, sep = ""),
+                       "SQLquery"))
 
 output_path <- function(){
 
@@ -13,9 +14,9 @@ output_path <- function(){
 
 write_csv <- function(dt, file_name){
 
-  file_dir <- paste0(output_path(), "/CSV Files/",
+  file_full_name <- paste0(output_path(), "/CSV Files/",
                      file_name)
 
-  readr::write_excel_csv(dt, file_dir)
+  readr::write_excel_csv(dt, file_full_name)
 
 }

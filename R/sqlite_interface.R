@@ -128,7 +128,7 @@ sort_table_sqlite <- function(sqlite_name, table_name,
 filter_sqlite <- function(sqlite_name, sql_query, ...) {
 
   con <- connect_sqlite(sqlite_name)
-  Ans <- dbGetQuery(con, sql_query, ...)
+  Ans <- DBI::dbGetQuery(con, sql_query, ...)
   DBI::dbDisconnect(con)
   Ans <- tibble::as_tibble(Ans)
 
