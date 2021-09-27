@@ -42,9 +42,9 @@ write_sqlite <- function(sqlite_name, table_name, df, ...) {
 
 }
 
-#' Copy data frames from SQLite database
+#' Copy tibble from SQLite database
 #'
-#' Reads an SQLite database table to a data frames from an
+#' Reads an SQLite database table to a tibble from an
 #'  specific path (/R Output/SQLite Files/).
 #'
 #' @inheritParams write_sqlite
@@ -74,36 +74,66 @@ list_tables_sqlite <- function(sqlite_name) {
 
 }
 
-OrdenarTablaBD <- function(DB, TablaOrdenar, strSQLOrderBy = "") {
+#' Send query, retrieve results and then clear result set
+#'
+#' Returns the result of a query as a tibble
+#'
+#' @param sql_query A character string containing SQL
+#' @param ... Other parameters passed on to
+#'  \code{\link[DBI]{dbGetQuery}}.
+#' @inheritParams write_sqlite
+#' @export
+filter_table_sqlite <- function(sqlite_name, sql_query, ...) {
 
-  con <- ConectarBD(DB)
+  con <- connect_sqlite(sqlite_name)
+  Ans <- dbGetQuery(con, sql_query, ...)
+  DBI::dbDisconnect(con)
+  Ans <- tibble::as_tibble(Ans)
+
+}
+
+#' Sort table from an specified SQLite database
+#'
+#' Sort table from an specified SQLite database in an specific
+#' path (/R Output/SQLite Files/)
+#'
+#' @param sql_sort_clause A character string containing SQL order by clause
+#' @inheritParams write_sqlite
+#' @export
+sort_table_sqlite <- function(sqlite_name, table_name,
+                              sql_sort_clause) {
+
+  con <- connect_sqlite(sqlite_name)
   SQLquery <- paste0("CREATE TABLE COPY AS SELECT * FROM ",
-                     TablaOrdenar , " ",
-                     "ORDER BY " , strSQLOrderBy)
+                     table_name , " ",
+                     "ORDER BY " , sql_sort_clause)
   DBI::dbExecute(con, SQLquery)
-  SQLquery <- paste0("DROP TABLE ", TablaOrdenar)
+  SQLquery <- paste0("DROP TABLE ", table_name)
   DBI::dbExecute(con, SQLquery)
-  SQLquery <- paste0("ALTER TABLE COPY RENAME TO ", TablaOrdenar)
+  SQLquery <- paste0("ALTER TABLE COPY RENAME TO ", table_name)
   DBI::dbExecute(con, SQLquery)
-  DesconectarBD(con)
+  DBI::dbDisconnect(con)
 
 }
 
-FiltrarBD <- function(DB, SQLquery, params = NULL) {
 
-  con <- ConectarBD(DB)
-  Ans <- dbGetQuery(con, SQLquery, params = params)
-  DesconectarBD(con)
-  return(Ans)
+##Ejecuctar SQL en BD
+EjecutarBD <- function(SQLquery, params = NULL) {
 
-}
-
-EjecutarBD <- function(DB, SQLquery, params = NULL) {
-
-  con <- ConectarBD(DB)
+  con <- ConectarBD()
   dbExecute(con, SQLquery, params = params)
   DesconectarBD(con)
 
 }
 
+EjecutarBDWithResponse <- function(SQLquery, params = NULL) {
 
+  con <- ConectarBD()
+  rs <- dbSendStatement(con, SQLquery, params = params)
+  x <- dbGetRowsAffected(rs)
+  dbClearResult(rs)
+  DesconectarBD(con)
+  x <- paste0("Nro Registros afectado: ", x)
+  print(x)
+
+}

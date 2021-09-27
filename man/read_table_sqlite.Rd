@@ -2,7 +2,7 @@
 % Please edit documentation in R/sqlite_interface.R
 \name{read_table_sqlite}
 \alias{read_table_sqlite}
-\title{Copy data frames from SQLite database}
+\title{Copy tibble from SQLite database}
 \usage{
 read_table_sqlite(sqlite_name, table_name, ...)
 }
@@ -17,6 +17,6 @@ table name}
 \code{\link[DBI]{dbWriteTable}}.}
 }
 \description{
-Reads an SQLite database table to a data frames from an
+Reads an SQLite database table to a tibble from an
 specific path (/R Output/SQLite Files/).
 }
