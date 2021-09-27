@@ -1,6 +1,6 @@
 Package: invicodatr
 Title: INVICO's Data Manipulation
-Version: 0.0.0.9004
+Version: 0.0.0.9005
 Authors@R: 
     person(given = "Fernando",
            family = "Corrales",
@@ -25,4 +25,5 @@ Imports:
     rlang,
     RSQLite,
     stringr,
+    tibble,
     utils

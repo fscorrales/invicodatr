@@ -50,5 +50,11 @@ read_siif_ppto_gtos_fte <- function(path, write_csv = FALSE,
     write_csv(Ans, "Ejecucion Presupuesto por Fuente SIIF.csv")
   }
 
+  if (write_sqlite == TRUE) {
+    write_sqlite("SIIF", "ppto_gtos_fte_rf602",
+                 df = Ans, overwrite = TRUE)
+  }
+
+  Ans
 
 }

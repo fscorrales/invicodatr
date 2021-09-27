@@ -34,12 +34,29 @@ connect_sqlite <-function(sqlite_name, ...) {
 #'  \code{\link[DBI]{dbWriteTable}}.
 #'
 #' @export
-write_sqlite <- function(sqlite_name,
-                         table_name,
-                         df, ...) {
+write_sqlite <- function(sqlite_name, table_name, df, ...) {
 
   con <- connect_sqlite(sqlite_name)
   DBI::dbWriteTable(con, name = table_name, value = df, ...)
   DBI::dbDisconnect(con)
 
 }
+
+#' Copy data frames from SQLite database
+#'
+#' Reads an SQLite database table to a data frames from an
+#'  specific path (/R Output/SQLite Files/).
+#'
+#' @inheritParams write_sqlite
+
+read_table_sqlite <- function(sqlite_name, table_name, ...) {
+
+  con <- connect_sqlite(sqlite_name)
+  Ans <- DBI::dbReadTable(con, table_name, ...)
+  DBI::dbDisconnect(con)
+  Ans <- tibble::as_tibble(Ans)
+
+}
+
+
+
