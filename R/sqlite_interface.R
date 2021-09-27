@@ -74,24 +74,6 @@ list_tables_sqlite <- function(sqlite_name) {
 
 }
 
-#' Send query, retrieve results and then clear result set
-#'
-#' Returns the result of a query as a tibble
-#'
-#' @param sql_query A character string containing SQL
-#' @param ... Other parameters passed on to
-#'  \code{\link[DBI]{dbGetQuery}}.
-#' @inheritParams write_sqlite
-#' @export
-filter_table_sqlite <- function(sqlite_name, sql_query, ...) {
-
-  con <- connect_sqlite(sqlite_name)
-  Ans <- dbGetQuery(con, sql_query, ...)
-  DBI::dbDisconnect(con)
-  Ans <- tibble::as_tibble(Ans)
-
-}
-
 #' Sort table from an specified SQLite database
 #'
 #' Sort table from an specified SQLite database in an specific
@@ -116,24 +98,40 @@ sort_table_sqlite <- function(sqlite_name, table_name,
 
 }
 
+#' Send query, retrieve results and then clear result set
+#'
+#' Returns the result of a query as a tibble
+#'
+#' @param sql_query A character string containing SQL
+#' @param ... Other parameters passed on to
+#'  \code{\link[DBI]{dbGetQuery}}.
+#' @inheritParams write_sqlite
+#' @export
+filter_sqlite <- function(sqlite_name, sql_query, ...) {
 
-##Ejecuctar SQL en BD
-EjecutarBD <- function(SQLquery, params = NULL) {
-
-  con <- ConectarBD()
-  dbExecute(con, SQLquery, params = params)
-  DesconectarBD(con)
+  con <- connect_sqlite(sqlite_name)
+  Ans <- dbGetQuery(con, sql_query, ...)
+  DBI::dbDisconnect(con)
+  Ans <- tibble::as_tibble(Ans)
 
 }
 
-EjecutarBDWithResponse <- function(SQLquery, params = NULL) {
 
-  con <- ConectarBD()
-  rs <- dbSendStatement(con, SQLquery, params = params)
-  x <- dbGetRowsAffected(rs)
-  dbClearResult(rs)
-  DesconectarBD(con)
-  x <- paste0("Nro Registros afectado: ", x)
+#' Execute an update statement, query number of rows affected, and then close
+#'  result set
+#'
+#' Executes a statement and returns the number of rows affected.
+#'
+#' @inheritParams filter_sqlite
+#' @export
+execute_sqlite <- function(sqlite_name, sql_query, ...) {
+
+  con <- connect_sqlite(sqlite_name)
+  rs <- DBI::dbSendStatement(con, SQLquery, ...)
+  x <- DBI::dbGetRowsAffected(rs)
+  DBI::dbClearResult(rs)
+  DBI::dbDisconnect(con)
+  x <- paste0("Rows affected: ", x)
   print(x)
 
 }
