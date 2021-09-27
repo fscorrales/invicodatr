@@ -74,6 +74,24 @@ list_tables_sqlite <- function(sqlite_name) {
 
 }
 
+#' List field names of remote SQLite tables
+#'
+#' List field names of remote SQLite tables accessible through
+#'  this connection from an specific path (/R Output/SQLite Files/).
+#'
+#' @inheritParams write_sqlite
+#' @export
+list_fields_sqlite <- function(sqlite_name) {
+
+  con <- connect_sqlite(sqlite_name)
+  tables <- DBI::dbListTables(con)
+  Ans <- lapply(tables, function(x) DBI::dbListFields(con, x))
+  DBI::dbDisconnect(con)
+  names(Ans) <- tables
+  return(Ans)
+
+}
+
 #' Sort table from an specified SQLite database
 #'
 #' Sort table from an specified SQLite database in an specific

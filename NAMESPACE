@@ -3,6 +3,7 @@
 export(connect_sqlite)
 export(execute_sqlite)
 export(filter_sqlite)
+export(list_fields_sqlite)
 export(list_tables_sqlite)
 export(read_siif_ppto_gtos_fte)
 export(read_table_sqlite)
