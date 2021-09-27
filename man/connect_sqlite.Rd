@@ -4,10 +4,14 @@
 \alias{connect_sqlite}
 \title{Create a connection to a SQLite database}
 \usage{
-connect_sqlite(sqlite_name)
+connect_sqlite(sqlite_name, ...)
 }
 \arguments{
 \item{sqlite_name}{SQLite database to connect}
+
+\item{...}{authentication arguments needed by the DBMS instance; these
+typically include user, password, host, port, dbname, etc. For details
+see the appropriate DBIDriver}
 }
 \description{
 Connect to a SQLite database in an specif path (/R Output/SQLite Files/).
