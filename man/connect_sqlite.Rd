@@ -14,5 +14,5 @@ typically include user, password, host, port, dbname, etc. For details
 see the appropriate DBIDriver}
 }
 \description{
-Connect to a SQLite database in an specif path (/R Output/SQLite Files/).
+Connect to a SQLite database in an specific path (/R Output/SQLite Files/).
 }

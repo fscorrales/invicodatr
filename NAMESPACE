@@ -2,5 +2,6 @@
 
 export(connect_sqlite)
 export(read_siif_ppto_gtos_fte)
+export(write_sqlite)
 importFrom(magrittr,"%>%")
 importFrom(rlang,.data)
