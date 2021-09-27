@@ -1,16 +1,28 @@
 Package: invicodatr
-Title: What the Package Does (One Line, Title Case)
+Title: INVICO's Data Manipulation
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Fernando",
+           family = "Corrales",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+           email = "fscorrales@gmail.com")
+Description: Set of functions to read (input), modify (process) and write (output)
+ different types of INVICO's (Instituto de Vivienda de Corrientes) files (xls, 
+ csv, sqlite). It's the first step of a posterior shiny app ecosystem. The database
+ it's not provide within this package due to privacy reasons.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Imports: 
+    DBI,
+    dplyr,
+    magrittr,
+    purrr,
+    readr,
+    readxl,
+    rlang,
+    RSQLite,
+    stringr,
+    utils
