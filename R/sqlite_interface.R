@@ -48,7 +48,7 @@ write_sqlite <- function(sqlite_name, table_name, df, ...) {
 #'  specific path (/R Output/SQLite Files/).
 #'
 #' @inheritParams write_sqlite
-
+#' @export
 read_table_sqlite <- function(sqlite_name, table_name, ...) {
 
   con <- connect_sqlite(sqlite_name)
@@ -58,5 +58,52 @@ read_table_sqlite <- function(sqlite_name, table_name, ...) {
 
 }
 
+#' List remote SQLite tables
+#'
+#' Returns the unquoted names of remote SQLite tables accessible through
+#'  this connection from an specific path (/R Output/SQLite Files/).
+#'
+#' @inheritParams write_sqlite
+#' @export
+list_tables_sqlite <- function(sqlite_name) {
+
+  con <- connect_sqlite(sqlite_name)
+  Ans <- DBI::dbListTables(con)
+  DBI::dbDisconnect(con)
+  return(Ans)
+
+}
+
+OrdenarTablaBD <- function(DB, TablaOrdenar, strSQLOrderBy = "") {
+
+  con <- ConectarBD(DB)
+  SQLquery <- paste0("CREATE TABLE COPY AS SELECT * FROM ",
+                     TablaOrdenar , " ",
+                     "ORDER BY " , strSQLOrderBy)
+  DBI::dbExecute(con, SQLquery)
+  SQLquery <- paste0("DROP TABLE ", TablaOrdenar)
+  DBI::dbExecute(con, SQLquery)
+  SQLquery <- paste0("ALTER TABLE COPY RENAME TO ", TablaOrdenar)
+  DBI::dbExecute(con, SQLquery)
+  DesconectarBD(con)
+
+}
+
+FiltrarBD <- function(DB, SQLquery, params = NULL) {
+
+  con <- ConectarBD(DB)
+  Ans <- dbGetQuery(con, SQLquery, params = params)
+  DesconectarBD(con)
+  return(Ans)
+
+}
+
+EjecutarBD <- function(DB, SQLquery, params = NULL) {
+
+  con <- ConectarBD(DB)
+  dbExecute(con, SQLquery, params = params)
+  DesconectarBD(con)
+
+}
 
 
