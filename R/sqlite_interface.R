@@ -74,10 +74,11 @@ list_tables_sqlite <- function(sqlite_name) {
 
 }
 
-#' List field names of remote SQLite tables
+#' List tables and fields names of remote SQLite tables
 #'
-#' List field names of remote SQLite tables accessible through
-#'  this connection from an specific path (/R Output/SQLite Files/).
+#' Returns a list of tables and fields names of remote SQLite database
+#' accessible through this connection from an specific path
+#' (/R Output/SQLite Files/).
 #'
 #' @inheritParams write_sqlite
 #' @export

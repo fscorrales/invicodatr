@@ -48,7 +48,7 @@ read_siif_ppto_gtos_fte <- function(path, write_csv = FALSE,
   })
 
   if (write_csv == TRUE) {
-    write_csv(Ans, "Ejecucion Presupuesto por Fuente SIIF.csv")
+    write_csv(Ans, "Ejecucion Presupuesto por Fuente SIIF (rf602).csv")
   }
 
   if (write_sqlite == TRUE) {
@@ -120,7 +120,7 @@ read_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
   })
 
   if (write_csv == TRUE) {
-    write_csv(Ans, "Ejecucion Presupuesto con Descripcion SIIF.csv")
+    write_csv(Ans, "Ejecucion Presupuesto con Descripcion SIIF (rf610).csv")
   }
 
   if (write_sqlite == TRUE) {
@@ -131,5 +131,58 @@ read_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
   Ans
 
 }
+#' Read, manipulate and write SIIF's rcg01_uejp report
+#'
+#' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
+#'  file could be exported.
+#'
+#' @inheritParams read_siif_ppto_gtos_fte
+#' @export
+read_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
+                                     write_sqlite = FALSE){
 
+  Ans <- purrr::map_df(path, function(x) {
 
+    db <- readxl::read_excel(x,
+                             col_types = "text",
+                             col_names = paste("X", 1:19, sep = ""))
+
+    db <- db %>%
+      dplyr::mutate(ejericio = stringr::str_sub(X1[2], -4)) %>%
+      dplyr::select(-X18, -X19)
+
+    names(db) <- c("nro_entrada", "nro_origen", "fuente", "clase_reg",
+                   "clase_mod", "clase_gto", "fecha", "monto",
+                   "cuit", "beneficiario", "nro_expte","cta_cte",
+                   "comprometido", "verificado", "aprobado", "pagado",
+                   "nro_fondo", "ejercicio")
+
+    db <- db %>%
+      utils::tail(-15) %>%
+      dplyr::filter(.data$cuit != is.na(.data$cuit)) %>%
+      dplyr::filter(.data$nro_entrada != is.na(.data$nro_entrada)) %>%
+      dplyr::mutate(fecha = as.Date(readr::parse_integer(.data$fecha),
+                                    origin = "1899-12-30"),
+                    nro_entrada = readr::parse_integer(.data$nro_entrada),
+                    nro_origen = readr::parse_integer(.data$nro_origen),
+                    monto = readr::parse_number(.data$monto,
+                                                locale = readr::locale(decimal_mark = ".")),
+             comprometido = ifelse(.data$comprometido == "S", T, F),
+             verificado = ifelse(.data$verificado == "S", T, F),
+             aprobado = ifelse(.data$aprobado == "S", T, F),
+             pagado = ifelse(.data$pagado == "S", T, F))
+
+  })
+
+  if (write_csv == TRUE) {
+    write_csv(Ans, "Comprobantes Gastos Ingresados SIIF (rcg01_uejp).csv")
+  }
+
+  if (write_sqlite == TRUE) {
+    write_sqlite("SIIF", "comprobantes_gtos_rcg01_uejp",
+                 df = Ans, overwrite = TRUE)
+  }
+
+  Ans
+
+}

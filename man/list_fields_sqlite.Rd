@@ -2,7 +2,7 @@
 % Please edit documentation in R/sqlite_interface.R
 \name{list_fields_sqlite}
 \alias{list_fields_sqlite}
-\title{List field names of remote SQLite tables}
+\title{List tables and fields names of remote SQLite tables}
 \usage{
 list_fields_sqlite(sqlite_name)
 }
@@ -11,6 +11,7 @@ list_fields_sqlite(sqlite_name)
 database name}
 }
 \description{
-List field names of remote SQLite tables accessible through
-this connection from an specific path (/R Output/SQLite Files/).
+Returns a list of tables and fields names of remote SQLite database
+accessible through this connection from an specific path
+(/R Output/SQLite Files/).
 }
