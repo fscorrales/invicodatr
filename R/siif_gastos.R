@@ -396,3 +396,64 @@ read_siif_resumen_fdos <- function(path, write_csv = FALSE,
 
 }
 
+#' Read, manipulate and write SIIF's rdeu012 report
+#'
+#' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
+#'  file could be exported.
+#'
+#' @inheritParams read_siif_ppto_gtos_fte
+#' @export
+read_siif_deuda_flotante <- function(path, write_csv = FALSE,
+                                   write_sqlite = FALSE){
+
+  Ans <- purrr::map_df(path, function(x) {
+
+    db <- readxl::read_excel(x,
+                             col_types = "text",
+                             col_names = FALSE)
+
+    db <- db %>%
+      dplyr::mutate(fuente = ifelse(...5 == "27", NA, as.numeric(...5)),
+                    fecha_desde = stringr::str_sub(...1[14], 7 ,17),
+                    fecha_hasta = stringr::str_sub(...1[14], -10)) %>%
+      utils::tail(-11) %>%
+      dplyr::transmute(fuente = zoo::na.locf(.data$fuente),
+                       fecha_desde = lubridate::dmy(.data$fecha_desde),
+                       fecha_hasta = lubridate::dmy(.data$fecha_hasta),
+                       mes_hasta = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha_hasta),
+                                                                   2, pad = "0"),
+                                                  lubridate::year(.data$fecha_hasta), sep = "/"),
+                       nro_entrada = ...1,
+                       nro_origen = ...3,
+                       fecha_aprobado = ...6,
+                       org_fin = ...8,
+                       monto = ...9,
+                       saldo = ...12,
+                       nro_expte = ...13,
+                       cta_cte = ...14,
+                       referencia = ...16,
+                       cuit = ...17,
+                       beneficiario = ...18) %>%
+      dplyr::filter(!is.na(.data$cuit),
+                    !is.na(.data$nro_entrada)) %>%
+      dplyr::mutate(fecha_aprobado = as.Date(readr::parse_integer(.data$fecha_aprobado),
+                                             origin = "1899-12-30"),
+                    nro_entrada = readr::parse_integer(.data$nro_entrada),
+                    nro_origen = readr::parse_integer(.data$nro_origen),
+                    monto = round(readr::parse_double(.data$monto), 2),
+                    saldo = round(readr::parse_double(.data$saldo), 2))
+
+  })
+
+  if (write_csv == TRUE) {
+    write_csv(Ans, "Deuda Flotante SIIF (rdeu012).csv")
+  }
+
+  if (write_sqlite == TRUE) {
+    write_sqlite("SIIF", "deuda_flotante_rdeu012",
+                 df = Ans, overwrite = TRUE)
+  }
+
+  Ans
+
+}
