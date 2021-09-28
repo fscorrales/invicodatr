@@ -186,3 +186,61 @@ read_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
   Ans
 
 }
+
+#' Read, manipulate and write SIIF's rcg01_par report
+#'
+#' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
+#'  file could be exported.
+#'
+#' @inheritParams read_siif_ppto_gtos_fte
+#' @export
+read_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
+                                        write_sqlite = FALSE){
+
+  Ans <- purrr::map_df(path, function(x) {
+
+    db <- readxl::read_excel(x,
+                             col_types = "text",
+                             col_names = paste("X", 1:19, sep = ""))
+
+    db <- db %>%
+      dplyr::mutate(ejericio = stringr::str_sub(X1[2], -4)) %>%
+      dplyr::select(-X2, -X4, -X9) %>%
+      utils::tail(-14) %>%
+      dplyr::filter(X1 != is.na(X1)) %>%
+      dplyr::transmute(ejericio = .data$ejericio,
+                       nro_entrada = readr::parse_integer(X1),
+                       nro_origen = readr::parse_integer(X3),
+                       fuente =  X5,
+                       clase_reg =  X6,
+                       clase_gto =  X7,
+                       fecha = as.Date(readr::parse_integer(X8),
+                                    origin = "1899-12-30"),
+                       partida =  X10,
+                       grupo = stringr::str_c(
+                         stringr::str_sub(.data$partida, 1,1), "00", ""),
+                       monto = readr::parse_number(.data$X11,
+                                                   locale = readr::locale(decimal_mark = ".")),
+                       cuit =  X12,
+                       beneficiario =  X13,
+                       nro_expte = X14,
+                       cta_cte =  X15,
+                       comprometido = ifelse(X16 == "S", T, F),
+                       verificado = ifelse(X17 == "S", T, F),
+                       aprobado = ifelse(X18 == "S", T, F),
+                       pagado = ifelse(X19 == "S", T, F))
+
+  })
+
+  if (write_csv == TRUE) {
+    write_csv(Ans, "Comprobantes Gastos Ingresados con Partida SIIFF (rcg01_par).csv")
+  }
+
+  if (write_sqlite == TRUE) {
+    write_sqlite("SIIF", "comprobantes_gtos_partida_rcg01_par",
+                 df = Ans, overwrite = TRUE)
+  }
+
+  Ans
+
+}
