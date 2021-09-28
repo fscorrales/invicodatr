@@ -20,24 +20,24 @@ read_siif_ppto_gtos_fte <- function(path, write_csv = FALSE,
 
     db <- readxl::read_excel(x,
                              col_types = "text",
-                             col_names = paste("X", 1:23, sep = ""))
+                             col_names = FALSE)
 
     db <- db %>%
-      dplyr::transmute(ejecicio = stringr::str_sub(X1[4], -4),
-                       programa = stringr::str_pad(X1, 2, pad = "0"),
-                       subprograma = stringr::str_pad(X2, 2, pad = "0"),
-                       proyecto = stringr::str_pad(X5, 2, pad = "0"),
-                       actividad = stringr::str_pad(X6, 2, pad = "0"),
-                       grupo = stringr::str_c(stringr::str_sub(X7, 1,1), "00", ""),
-                       partida = X7,
-                       fuente = X8,
-                       org = X9,
-                       credito_original = X12,
-                       credito_vigente = X13,
-                       comprometido = X14,
-                       ordenado = X15,
-                       saldo = X17,
-                       pendiente = X19) %>%
+      dplyr::transmute(ejercicio = stringr::str_sub(...1[4], -4),
+                       programa = stringr::str_pad(...1, 2, pad = "0"),
+                       subprograma = stringr::str_pad(...2, 2, pad = "0"),
+                       proyecto = stringr::str_pad(...5, 2, pad = "0"),
+                       actividad = stringr::str_pad(...6, 2, pad = "0"),
+                       partida = ...7,
+                       grupo = stringr::str_c(stringr::str_sub(.data$partida, 1,1), "00", ""),
+                       fuente = ...8,
+                       org = ...9,
+                       credito_original = ...12,
+                       credito_vigente = ...13,
+                       comprometido = ...14,
+                       ordenado = ...15,
+                       saldo = ...17,
+                       pendiente = ...19) %>%
       utils::tail(-13) %>%
       dplyr::filter(.data$programa != is.na(.data$programa)) %>%
       dplyr::mutate_at(c("credito_original", "credito_vigente", "comprometido",
@@ -74,22 +74,22 @@ read_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
 
     db <- readxl::read_excel(x,
                              col_types = "text",
-                             col_names = paste("X", 1:65, sep = ""))
+                             col_names = FALSE)
 
     db <- db %>%
-      dplyr::transmute(ejecicio = stringr::str_sub(X33[8], -4),
-                       programa = X5,
-                       subprograma = X9,
-                       proyecto = X14,
-                       actividad =  X17,
-                       grupo = X20,
-                       partida = X21,
-                       desc_part = X24,
-                       credito_original = X38,
-                       credito_vigente = X44,
-                       comprometido = X49,
-                       ordenado = X55,
-                       saldo = X60) %>%
+      dplyr::transmute(ejercicio = stringr::str_sub(...33[8], -4),
+                       programa = ...5,
+                       subprograma = ...9,
+                       proyecto = ...14,
+                       actividad =  ...17,
+                       grupo = ...20,
+                       partida = ...21,
+                       desc_part = ...24,
+                       credito_original = ...38,
+                       credito_vigente = ...44,
+                       comprometido = ...49,
+                       ordenado = ...55,
+                       saldo = ...60) %>%
       utils::tail(-28) %>%
       dplyr::mutate(programa = zoo::na.locf(.data$programa),
                     subprograma = zoo::na.locf(.data$subprograma, F),
@@ -145,11 +145,11 @@ read_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
 
     db <- readxl::read_excel(x,
                              col_types = "text",
-                             col_names = paste("X", 1:19, sep = ""))
+                             col_names = FALSE)
 
     db <- db %>%
-      dplyr::mutate(ejericio = stringr::str_sub(X1[2], -4)) %>%
-      dplyr::select(-X18, -X19)
+      dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4)) %>%
+      dplyr::select(-...18, -...19)
 
     names(db) <- c("nro_entrada", "nro_origen", "fuente", "clase_reg",
                    "clase_mod", "clase_gto", "fecha", "monto",
@@ -201,39 +201,39 @@ read_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
 
     db <- readxl::read_excel(x,
                              col_types = "text",
-                             col_names = paste("X", 1:19, sep = ""))
+                             col_names = FALSE)
 
     db <- db %>%
-      dplyr::mutate(ejericio = stringr::str_sub(X1[2], -4)) %>%
-      dplyr::select(-X2, -X4, -X9) %>%
+      dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4)) %>%
+      dplyr::select(-...2, -...4, -...9) %>%
       utils::tail(-14) %>%
-      dplyr::filter(X1 != is.na(X1)) %>%
-      dplyr::transmute(ejericio = .data$ejericio,
-                       nro_entrada = readr::parse_integer(X1),
-                       nro_origen = readr::parse_integer(X3),
-                       fuente =  X5,
-                       clase_reg =  X6,
-                       clase_gto =  X7,
-                       fecha = as.Date(readr::parse_integer(X8),
+      dplyr::filter(...1 != is.na(...1)) %>%
+      dplyr::transmute(ejercicio = .data$ejercicio,
+                       nro_entrada = readr::parse_integer(...1),
+                       nro_origen = readr::parse_integer(...3),
+                       fuente =  ...5,
+                       clase_reg =  ...6,
+                       clase_gto =  ...7,
+                       fecha = as.Date(readr::parse_integer(...8),
                                     origin = "1899-12-30"),
-                       partida =  X10,
+                       partida =  ...10,
                        grupo = stringr::str_c(
                          stringr::str_sub(.data$partida, 1,1), "00", ""),
-                       monto = readr::parse_number(.data$X11,
+                       monto = readr::parse_number(...11,
                                                    locale = readr::locale(decimal_mark = ".")),
-                       cuit =  X12,
-                       beneficiario =  X13,
-                       nro_expte = X14,
-                       cta_cte =  X15,
-                       comprometido = ifelse(X16 == "S", T, F),
-                       verificado = ifelse(X17 == "S", T, F),
-                       aprobado = ifelse(X18 == "S", T, F),
-                       pagado = ifelse(X19 == "S", T, F))
+                       cuit =  ...12,
+                       beneficiario =  ...13,
+                       nro_expte = ...14,
+                       cta_cte =  ...15,
+                       comprometido = ifelse(...16 == "S", T, F),
+                       verificado = ifelse(...17 == "S", T, F),
+                       aprobado = ifelse(...18 == "S", T, F),
+                       pagado = ifelse(...19 == "S", T, F))
 
   })
 
   if (write_csv == TRUE) {
-    write_csv(Ans, "Comprobantes Gastos Ingresados con Partida SIIFF (rcg01_par).csv")
+    write_csv(Ans, "Comprobantes Gastos Ingresados con Partida SIIF (rcg01_par).csv")
   }
 
   if (write_sqlite == TRUE) {
@@ -244,3 +244,57 @@ read_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
   Ans
 
 }
+
+#' Read, manipulate and write SIIF's gto_rpa03g report
+#'
+#' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
+#'  file could be exported.
+#'
+#' @inheritParams read_siif_ppto_gtos_fte
+#' @export
+read_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
+                                                write_sqlite = FALSE){
+
+  Ans <- purrr::map_df(path, function(x) {
+
+    db <- readxl::read_excel(x,
+                             col_types = "text",
+                             col_names = FALSE)
+
+    db <- db %>%
+      dplyr::mutate(ejercicio = stringr::str_sub(...18[2], -4)) %>%
+      dplyr::select(.data$ejercicio, ...1, ...5, ...8, ...11,
+                    ...14, ...17, ...19, ...21, ...23) %>%
+      utils::tail(-20) %>%
+      dplyr::filter(...1 != is.na(...1)) %>%
+      dplyr::transmute(ejercicio = .data$ejercicio,
+                       nro_entrada = readr::parse_integer(...1),
+                       nro_origen = readr::parse_integer(...5),
+                       monto = readr::parse_number(...8,
+                                                   locale = readr::locale(decimal_mark = ".")),
+                       mes =  readr::parse_integer(...11),
+                       fecha = as.Date(readr::parse_integer(...14),
+                                       origin = "1899-12-30"),
+                       partida =  ...17,
+                       grupo = stringr::str_c(
+                         stringr::str_sub(.data$partida, 1,1), "00", ""),
+                       nro_expte = ...19,
+                       glose = ...21,
+                       beneficiario = ...23)
+
+
+  })
+
+  if (write_csv == TRUE) {
+    write_csv(Ans, "Comprobantes Gastos Ingresados por Grupo Partida SIIF (gto_rpa03g).csv")
+  }
+
+  if (write_sqlite == TRUE) {
+    write_sqlite("SIIF", "comprobantes_gtos_gpo_partida_gto_rpa03g",
+                 df = Ans, overwrite = TRUE)
+  }
+
+  Ans
+
+}
+

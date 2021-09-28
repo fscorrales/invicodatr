@@ -1,5 +1,5 @@
 # Define global functions or variables
-utils::globalVariables(c(paste("X", 1:70, sep = ""),
+utils::globalVariables(c(paste("...", 1:70, sep = ""),
                        "SQLquery"))
 
 output_path <- function(){
