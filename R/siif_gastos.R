@@ -298,3 +298,48 @@ read_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
 
 }
 
+
+#' Read, manipulate and write SIIF's rao01 report
+#'
+#' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
+#'  file could be exported.
+#'
+#' @inheritParams read_siif_ppto_gtos_fte
+#' @export
+read_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
+                                                    write_sqlite = FALSE){
+
+  Ans <- purrr::map_df(path, function(x) {
+
+    db <- readxl::read_excel(x,
+                             col_types = "text",
+                             col_names = FALSE)
+
+    db <- db %>%
+      utils::tail(-16) %>%
+      dplyr::filter(...1 != is.na(...1)) %>%
+      dplyr::transmute(fecha = as.Date(readr::parse_integer(...12),
+                                       origin = "1899-12-30"),
+                       ejercicio = as.character(lubridate::year(.data$fecha)),
+                       nro_entrada = readr::parse_integer(...1),
+                       nro_origen = readr::parse_integer(...5),
+                       cod_retencion = ...4,
+                       desc_retencion =  ...7,
+                       monto = readr::parse_number(...11,
+                                                   locale = readr::locale(decimal_mark = ".")),
+                       cta_cte =  ...14)
+
+  })
+
+  if (write_csv == TRUE) {
+    write_csv(Ans, "Listado Retenciones Practicada por Codigo SIIF (rao01).csv")
+  }
+
+  if (write_sqlite == TRUE) {
+    write_sqlite("SIIF", "retenciones_por_codigo_rao01",
+                 df = Ans, overwrite = TRUE)
+  }
+
+  Ans
+
+}

@@ -1,6 +1,6 @@
 Package: invicodatr
 Title: INVICO's Data Manipulation
-Version: 0.0.0.9013
+Version: 0.0.0.9014
 Authors@R: 
     person(given = "Fernando",
            family = "Corrales",
@@ -18,6 +18,7 @@ RoxygenNote: 7.1.2
 Imports: 
     DBI,
     dplyr,
+    lubridate,
     magrittr,
     purrr,
     readr,
