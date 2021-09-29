@@ -1,6 +1,7 @@
 # Define global functions or variables
 utils::globalVariables(c(paste("...", 1:70, sep = ""),
-                       "SQLquery"))
+                         paste("X", 1:70, sep = ""),
+                         "SQLquery"))
 
 output_path <- function(){
 

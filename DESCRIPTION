@@ -25,6 +25,7 @@ Imports:
     readxl,
     rlang,
     RSQLite,
+    stringi,
     stringr,
     tibble,
     tidyr,
