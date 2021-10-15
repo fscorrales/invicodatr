@@ -2,7 +2,7 @@
 % Please edit documentation in R/siif_gastos.R
 \name{read_siif_pagos}
 \alias{read_siif_pagos}
-\title{Read, manipulate and write SIIF's rt03 report}
+\title{Read, process and write SIIF's rt03 report}
 \usage{
 read_siif_pagos(path, write_csv = FALSE, write_sqlite = FALSE)
 }

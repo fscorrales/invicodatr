@@ -2,7 +2,7 @@
 % Please edit documentation in R/siif_gastos.R
 \name{read_siif_resumen_fdos}
 \alias{read_siif_resumen_fdos}
-\title{Read, manipulate and write SIIF's rfondo07tp report}
+\title{Read, process and write SIIF's rfondo07tp report}
 \usage{
 read_siif_resumen_fdos(path, write_csv = FALSE, write_sqlite = FALSE)
 }

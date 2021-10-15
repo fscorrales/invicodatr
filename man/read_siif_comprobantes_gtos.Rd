@@ -2,7 +2,7 @@
 % Please edit documentation in R/siif_gastos.R
 \name{read_siif_comprobantes_gtos}
 \alias{read_siif_comprobantes_gtos}
-\title{Read, manipulate and write SIIF's rcg01_uejp report}
+\title{Read, process and write SIIF's rcg01_uejp report}
 \usage{
 read_siif_comprobantes_gtos(path, write_csv = FALSE, write_sqlite = FALSE)
 }

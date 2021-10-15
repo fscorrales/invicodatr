@@ -2,7 +2,7 @@
 % Please edit documentation in R/siif_gastos.R
 \name{read_siif_comprobantes_gtos_partida}
 \alias{read_siif_comprobantes_gtos_partida}
-\title{Read, manipulate and write SIIF's rcg01_par report}
+\title{Read, process and write SIIF's rcg01_par report}
 \usage{
 read_siif_comprobantes_gtos_partida(
   path,

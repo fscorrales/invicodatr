@@ -2,7 +2,7 @@
 % Please edit documentation in R/siif_gastos.R
 \name{read_siif_retenciones_por_codigo}
 \alias{read_siif_retenciones_por_codigo}
-\title{Read, manipulate and write SIIF's rao01 report}
+\title{Read, process and write SIIF's rao01 report}
 \usage{
 read_siif_retenciones_por_codigo(path, write_csv = FALSE, write_sqlite = FALSE)
 }

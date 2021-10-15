@@ -2,7 +2,7 @@
 % Please edit documentation in R/siif_gastos.R
 \name{read_siif_deuda_flotante}
 \alias{read_siif_deuda_flotante}
-\title{Read, manipulate and write SIIF's rdeu012 report}
+\title{Read, process and write SIIF's rdeu012 report}
 \usage{
 read_siif_deuda_flotante(path, write_csv = FALSE, write_sqlite = FALSE)
 }

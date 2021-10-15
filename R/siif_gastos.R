@@ -2,7 +2,7 @@
 #' @importFrom rlang .data
 NULL
 
-#' Read, manipulate and write SIIF's rf602 report
+#' Read, process and write SIIF's rf602 report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
@@ -13,39 +13,10 @@ NULL
 #' @param write_sqlite logical. Should a sqlite file be generated?
 #'
 #' @export
-read_siif_ppto_gtos_fte <- function(path, write_csv = FALSE,
+rpw_siif_ppto_gtos_fte <- function(path, write_csv = FALSE,
                                     write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      dplyr::transmute(ejercicio = stringr::str_sub(...1[4], -4),
-                       programa = stringr::str_pad(...1, 2, pad = "0"),
-                       subprograma = stringr::str_pad(...2, 2, pad = "0"),
-                       proyecto = stringr::str_pad(...5, 2, pad = "0"),
-                       actividad = stringr::str_pad(...6, 2, pad = "0"),
-                       partida = ...7,
-                       grupo = stringr::str_c(stringr::str_sub(.data$partida, 1,1), "00", ""),
-                       fuente = ...8,
-                       org = ...9,
-                       credito_original = ...12,
-                       credito_vigente = ...13,
-                       comprometido = ...14,
-                       ordenado = ...15,
-                       saldo = ...17,
-                       pendiente = ...19) %>%
-      utils::tail(-13) %>%
-      dplyr::filter(.data$programa != is.na(.data$programa)) %>%
-      dplyr::mutate_at(c("credito_original", "credito_vigente", "comprometido",
-                         "ordenado", "saldo", "pendiente"),
-                       readr::parse_number,
-                       locale = readr::locale(decimal_mark = "."))
-
-  })
+  Ans <- purrr::map_df(path, read_siif_ppto_gtos_fte_rf602)
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Ejecucion Presupuesto por Fuente SIIF (rf602).csv")
@@ -56,16 +27,16 @@ read_siif_ppto_gtos_fte <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
 
-#' Read, manipulate and write SIIF's rf610 report
+#' Read, process and write SIIF's rf610 report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){
@@ -131,12 +102,12 @@ read_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
   Ans
 
 }
-#' Read, manipulate and write SIIF's rcg01_uejp report
+#' Read, process and write SIIF's rcg01_uejp report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){
@@ -187,12 +158,12 @@ read_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
 
 }
 
-#' Read, manipulate and write SIIF's rcg01_par report
+#' Read, process and write SIIF's rcg01_par report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
                                         write_sqlite = FALSE){
@@ -245,12 +216,12 @@ read_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
 
 }
 
-#' Read, manipulate and write SIIF's gto_rpa03g report
+#' Read, process and write SIIF's gto_rpa03g report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
                                                 write_sqlite = FALSE){
@@ -299,12 +270,12 @@ read_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
 }
 
 
-#' Read, manipulate and write SIIF's rao01 report
+#' Read, process and write SIIF's rao01 report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
                                                     write_sqlite = FALSE){
@@ -345,12 +316,12 @@ read_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
 }
 
 
-#' Read, manipulate and write SIIF's rfondo07tp report
+#' Read, process and write SIIF's rfondo07tp report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_resumen_fdos <- function(path, write_csv = FALSE,
                                    write_sqlite = FALSE){
@@ -396,12 +367,12 @@ read_siif_resumen_fdos <- function(path, write_csv = FALSE,
 
 }
 
-#' Read, manipulate and write SIIF's rdeu012 report
+#' Read, process and write SIIF's rdeu012 report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_deuda_flotante <- function(path, write_csv = FALSE,
                                    write_sqlite = FALSE){
@@ -459,12 +430,12 @@ read_siif_deuda_flotante <- function(path, write_csv = FALSE,
 }
 
 
-#' Read, manipulate and write SIIF's rdeu012b2_c report
+#' Read, process and write SIIF's rdeu012b2_c report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){
@@ -521,12 +492,12 @@ read_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
 
 }
 
-#' Read, manipulate and write SIIF's rt03 report
+#' Read, process and write SIIF's rt03 report
 #'
 #' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
-#' @inheritParams read_siif_ppto_gtos_fte
+#' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 read_siif_pagos <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){

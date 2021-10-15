@@ -2,7 +2,7 @@
 % Please edit documentation in R/siif_gastos.R
 \name{read_siif_ppto_gtos_desc}
 \alias{read_siif_ppto_gtos_desc}
-\title{Read, manipulate and write SIIF's rf610 report}
+\title{Read, process and write SIIF's rf610 report}
 \usage{
 read_siif_ppto_gtos_desc(path, write_csv = FALSE, write_sqlite = FALSE)
 }
