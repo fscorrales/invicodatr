@@ -1,6 +1,6 @@
 Package: invicodatr
 Title: INVICO's Data Manipulation
-Version: 0.0.0.9019
+Version: 0.0.0.9020
 Authors@R: 
     person(given = "Fernando",
            family = "Corrales",
@@ -31,3 +31,6 @@ Imports:
     tidyr,
     utils,
     zoo
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

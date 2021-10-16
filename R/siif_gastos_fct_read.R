@@ -30,6 +30,6 @@ read_siif_ppto_gtos_fte_rf602 <- function(path){
                        "ordenado", "saldo", "pendiente"),
                      readr::parse_number,
                      locale = readr::locale(decimal_mark = "."))
-
+  invisible(db)
 
 }
