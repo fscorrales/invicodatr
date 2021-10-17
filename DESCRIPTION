@@ -29,6 +29,7 @@ Imports:
     stringr,
     tibble,
     tidyr,
+    tools,
     utils,
     zoo
 Suggests: 

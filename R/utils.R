@@ -3,9 +3,17 @@ utils::globalVariables(c(paste("...", 1:70, sep = ""),
                          paste("X", 1:70, sep = ""),
                          "SQLquery"))
 
+div_path <- function(full_path){
+
+  Ans <- stringr::str_split(full_path, "/", simplify = T) %>%
+    as.vector()
+
+}
+
 output_path <- function(){
 
-  Ans <- stringr::str_split(getwd(), "/", simplify = T)
+  # Ans <- stringr::str_split(getwd(), "/", simplify = T)
+  Ans <- div_path(getwd())
   Ans <- Ans[1:(length(Ans)-1)] %>%
     sapply(function(x) paste0(x, "/")) %>%
     paste(collapse = "") %>%

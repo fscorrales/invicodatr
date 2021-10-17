@@ -4,7 +4,7 @@
 \alias{rpw_siif_ppto_gtos_fte}
 \title{Read, process and write SIIF's rf602 report}
 \usage{
-rpw_siif_ppto_gtos_fte(path, write_csv = FALSE, write_sqlite = FALSE)
+rpw_siif_ppto_gtos_fte(path = NULL, write_csv = FALSE, write_sqlite = FALSE)
 }
 \arguments{
 \item{path}{a character vector of full path names. If more than one path is

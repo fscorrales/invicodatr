@@ -4,9 +4,27 @@ NULL
 
 read_siif_ppto_gtos_fte_rf602 <- function(path){
 
-  db <- readxl::read_excel(path,
-                           col_types = "text",
-                           col_names = FALSE)
+  required_ext <- "xls"
+  required_ncol <- 23
+  required_title <- "Titulo"
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  suppressMessages(
+    db <- readxl::read_excel(path,
+                             col_types = "text",
+                             col_names = FALSE)
+  )
+
+  if (ncol(db) != required_ncol) {
+    abort_bad_ncol(path, ncol(db), required_ncol)
+  }
 
   db <- db %>%
     dplyr::transmute(ejercicio = stringr::str_sub(...1[4], -4),
@@ -30,6 +48,5 @@ read_siif_ppto_gtos_fte_rf602 <- function(path){
                        "ordenado", "saldo", "pendiente"),
                      readr::parse_number,
                      locale = readr::locale(decimal_mark = "."))
-  invisible(db)
 
 }

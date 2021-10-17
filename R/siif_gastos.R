@@ -13,10 +13,10 @@ NULL
 #' @param write_sqlite logical. Should a sqlite file be generated?
 #'
 #' @export
-rpw_siif_ppto_gtos_fte <- function(path, write_csv = FALSE,
+rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
                                     write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, read_siif_ppto_gtos_fte_rf602)
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_ppto_gtos_fte_rf602(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Ejecucion Presupuesto por Fuente SIIF (rf602).csv")
