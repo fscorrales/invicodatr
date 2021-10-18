@@ -15,3 +15,12 @@ test_that("reading rf610 returns a tibble", {
   expect_equal(ncol(df), 18)
 
 })
+
+test_that("reading rcg01_uejp returns a tibble", {
+  df <- system.file("extdata", "rcg01_uejp.xls",
+                    package = "invicodatr", mustWork = TRUE) %>%
+    read_siif_comprobantes_gtos_rcg01_uejp()
+  expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
+  expect_equal(ncol(df), 18)
+
+})

@@ -62,41 +62,10 @@ rpw_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
+rpw_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4)) %>%
-      dplyr::select(-...18, -...19)
-
-    names(db) <- c("nro_entrada", "nro_origen", "fuente", "clase_reg",
-                   "clase_mod", "clase_gto", "fecha", "monto",
-                   "cuit", "beneficiario", "nro_expte","cta_cte",
-                   "comprometido", "verificado", "aprobado", "pagado",
-                   "nro_fondo", "ejercicio")
-
-    db <- db %>%
-      utils::tail(-15) %>%
-      dplyr::filter(.data$cuit != is.na(.data$cuit)) %>%
-      dplyr::filter(.data$nro_entrada != is.na(.data$nro_entrada)) %>%
-      dplyr::mutate(fecha = as.Date(readr::parse_integer(.data$fecha),
-                                    origin = "1899-12-30"),
-                    nro_entrada = readr::parse_integer(.data$nro_entrada),
-                    nro_origen = readr::parse_integer(.data$nro_origen),
-                    monto = readr::parse_number(.data$monto,
-                                                locale = readr::locale(decimal_mark = ".")),
-             comprometido = ifelse(.data$comprometido == "S", T, F),
-             verificado = ifelse(.data$verificado == "S", T, F),
-             aprobado = ifelse(.data$aprobado == "S", T, F),
-             pagado = ifelse(.data$pagado == "S", T, F))
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_comprobantes_gtos_rcg01_uejp(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Comprobantes Gastos Ingresados SIIF (rcg01_uejp).csv")
@@ -107,7 +76,7 @@ read_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
 

@@ -153,3 +153,71 @@ read_siif_ppto_gtos_desc_rf610 <- function(path){
   invisible(db)
 
 }
+
+read_siif_comprobantes_gtos_rcg01_uejp <- function(path){
+
+  required_ext <- "xls"
+  required_ncol <- 19
+  required_title <- "Resumen Diario de Comprobantes de Gastos Ingresados"
+  required_nvar <- 18
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  suppressMessages(
+    db <- readxl::read_excel(path,
+                             col_types = "text",
+                             col_names = FALSE)
+  )
+
+  read_ncol <- ncol(db)
+
+  if (read_ncol != required_ncol) {
+    abort_bad_ncol(path, read_ncol, required_ncol)
+  }
+
+  read_title <- (db$...1[4])
+
+  if (read_title != required_title) {
+    abort_bad_title(path, read_title, required_title)
+  }
+
+  db <- db %>%
+    dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4)) %>%
+    dplyr::select(-...18, -...19)
+
+  names(db) <- c("nro_entrada", "nro_origen", "fuente", "clase_reg",
+                 "clase_mod", "clase_gto", "fecha", "monto",
+                 "cuit", "beneficiario", "nro_expte","cta_cte",
+                 "comprometido", "verificado", "aprobado", "pagado",
+                 "nro_fondo", "ejercicio")
+
+  db <- db %>%
+    utils::tail(-15) %>%
+    dplyr::filter(.data$cuit != is.na(.data$cuit)) %>%
+    dplyr::filter(.data$nro_entrada != is.na(.data$nro_entrada)) %>%
+    dplyr::mutate(fecha = as.Date(readr::parse_integer(.data$fecha),
+                                  origin = "1899-12-30"),
+                  nro_entrada = readr::parse_integer(.data$nro_entrada),
+                  nro_origen = readr::parse_integer(.data$nro_origen),
+                  monto = readr::parse_number(.data$monto,
+                                              locale = readr::locale(decimal_mark = ".")),
+                  comprometido = ifelse(.data$comprometido == "S", T, F),
+                  verificado = ifelse(.data$verificado == "S", T, F),
+                  aprobado = ifelse(.data$aprobado == "S", T, F),
+                  pagado = ifelse(.data$pagado == "S", T, F))
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
+
+  invisible(db)
+
+}
