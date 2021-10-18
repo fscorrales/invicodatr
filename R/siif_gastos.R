@@ -38,57 +38,10 @@ rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
+rpw_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      dplyr::transmute(ejercicio = stringr::str_sub(...33[8], -4),
-                       programa = ...5,
-                       subprograma = ...9,
-                       proyecto = ...14,
-                       actividad =  ...17,
-                       grupo = ...20,
-                       partida = ...21,
-                       desc_part = ...24,
-                       credito_original = ...38,
-                       credito_vigente = ...44,
-                       comprometido = ...49,
-                       ordenado = ...55,
-                       saldo = ...60) %>%
-      utils::tail(-28) %>%
-      dplyr::mutate(programa = zoo::na.locf(.data$programa),
-                    subprograma = zoo::na.locf(.data$subprograma, F),
-                    proyecto = zoo::na.locf(.data$proyecto, F),
-                    actividad = zoo::na.locf(.data$actividad, F),
-                    grupo = zoo::na.locf(.data$grupo, F),
-                    partida = zoo::na.locf(.data$partida, F),
-                    desc_part = zoo::na.locf(.data$desc_part, F)) %>%
-      dplyr::filter(.data$credito_original != is.na(.data$credito_original)) %>%
-      dplyr::mutate_at(c("credito_original", "credito_vigente",
-                         "comprometido", "ordenado", "saldo"),
-                       readr::parse_number,
-                       locale = readr::locale(decimal_mark = ".")) %>%
-      tidyr::separate(.data$programa, c("programa", "desc_prog"),
-                      remove = T, extra = "merge") %>%
-      tidyr::separate(.data$subprograma, c("subprograma", "desc_subprog"),
-                      remove = T, extra = "merge") %>%
-      tidyr::separate(.data$proyecto, c("proyecto", "desc_proy"),
-                      remove = T, extra = "merge") %>%
-      tidyr::separate(.data$actividad, c("actividad", "desc_act"),
-                      remove = T, extra = "merge") %>%
-      tidyr::separate(.data$grupo, c("grupo", "desc_gpo"),
-                      remove = T, extra = "merge") %>%
-      dplyr::mutate_at(c("programa", "subprograma",
-                         "proyecto", "actividad"),
-                       stringr::str_pad, width = 2, pad = "0")
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_ppto_gtos_desc_rf610(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Ejecucion Presupuesto con Descripcion SIIF (rf610).csv")
@@ -99,7 +52,7 @@ read_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
 #' Read, process and write SIIF's rcg01_uejp report
