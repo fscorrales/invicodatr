@@ -164,36 +164,10 @@ rpw_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_resumen_fdos <- function(path, write_csv = FALSE,
+rpw_siif_resumen_fdos <- function(path, write_csv = FALSE,
                                    write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      dplyr::mutate(ejercicio = stringr::str_sub(...1[3], -4),
-                    tipo_comprobante = stringr::str_sub(...2[10], - (length(...2[10]) - 72)))
-
-    db <- db %>%
-      utils::tail(-14) %>%
-      dplyr::filter(...10 != is.na(...10)) %>%
-      dplyr::transmute(tipo_comprobante = .data$tipo_comprobante,
-                       ejercicio = .data$ejercicio,
-                       fecha = as.Date(readr::parse_integer(...10),
-                                       origin = "1899-12-30"),
-                       nro_fondo = readr::parse_integer(...3),
-                       glosa = ...6,
-                       ingresos = readr::parse_number(...12,
-                                                   locale = readr::locale(decimal_mark = ".")),
-                       egresos = readr::parse_number(...15,
-                                                   locale = readr::locale(decimal_mark = ".")),
-                       saldo = readr::parse_number(...18,
-                                                   locale = readr::locale(decimal_mark = ".")))
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_resumen_fdos_rfondo07tp(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Resumen de Fondos SIIF (rfondo07tp).csv")
@@ -204,7 +178,7 @@ read_siif_resumen_fdos <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
 

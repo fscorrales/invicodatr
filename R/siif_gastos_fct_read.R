@@ -413,3 +413,68 @@ read_siif_retenciones_por_codigo_rao01 <- function(path){
   invisible(db)
 
 }
+
+read_siif_resumen_fdos_rfondo07tp <- function(path){
+
+  required_ext <- "xls"
+  required_ncol <- 20
+  required_title <- "RESUMEN DE FONDOS DEL EJERCICIO"
+  required_nvar <- 8
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  suppressMessages(
+    db <- readxl::read_excel(path,
+                             col_types = "text",
+                             col_names = FALSE)
+  )
+
+  read_ncol <- ncol(db)
+
+  if (read_ncol != required_ncol) {
+    abort_bad_ncol(path, read_ncol, required_ncol)
+  }
+
+  read_title <- stringr::str_sub(db$...1[3], 1,
+                                 stringr::str_length(db$...1[3]) - 5)
+
+  if (is.na(read_title) | (read_title != required_title)) {
+    abort_bad_title(path, read_title, required_title)
+  }
+
+  db <- db %>%
+    dplyr::mutate(ejercicio = stringr::str_sub(...1[3], -4),
+                  tipo_comprobante = stringr::str_sub(...2[10], - (length(...2[10]) - 72)))
+
+  db <- db %>%
+    utils::tail(-14) %>%
+    dplyr::filter(...10 != is.na(...10)) %>%
+    dplyr::transmute(tipo_comprobante = .data$tipo_comprobante,
+                     ejercicio = .data$ejercicio,
+                     fecha = as.Date(readr::parse_integer(...10),
+                                     origin = "1899-12-30"),
+                     nro_fondo = readr::parse_integer(...3),
+                     glosa = ...6,
+                     ingresos = readr::parse_number(...12,
+                                                    locale = readr::locale(decimal_mark = ".")),
+                     egresos = readr::parse_number(...15,
+                                                   locale = readr::locale(decimal_mark = ".")),
+                     saldo = readr::parse_number(...18,
+                                                 locale = readr::locale(decimal_mark = ".")))
+
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
+
+  invisible(db)
+
+}
