@@ -112,38 +112,10 @@ rpw_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
+rpw_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
                                                 write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      dplyr::mutate(ejercicio = stringr::str_sub(...18[2], -4)) %>%
-      dplyr::select(.data$ejercicio, ...1, ...5, ...8, ...11,
-                    ...14, ...17, ...19, ...21, ...23) %>%
-      utils::tail(-20) %>%
-      dplyr::filter(...1 != is.na(...1)) %>%
-      dplyr::transmute(ejercicio = .data$ejercicio,
-                       nro_entrada = readr::parse_integer(...1),
-                       nro_origen = readr::parse_integer(...5),
-                       monto = readr::parse_number(...8,
-                                                   locale = readr::locale(decimal_mark = ".")),
-                       mes =  readr::parse_integer(...11),
-                       fecha = as.Date(readr::parse_integer(...14),
-                                       origin = "1899-12-30"),
-                       partida =  ...17,
-                       grupo = stringr::str_c(
-                         stringr::str_sub(.data$partida, 1,1), "00", ""),
-                       nro_expte = ...19,
-                       glose = ...21,
-                       beneficiario = ...23)
-
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Comprobantes Gastos Ingresados por Grupo Partida SIIF (gto_rpa03g).csv")
@@ -154,7 +126,7 @@ read_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
 

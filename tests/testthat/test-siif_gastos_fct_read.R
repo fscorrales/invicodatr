@@ -33,3 +33,12 @@ test_that("reading rcg01_par returns a tibble", {
   expect_equal(ncol(df), 18)
 
 })
+
+test_that("reading gto_rpa03g returns a tibble", {
+  df <- system.file("extdata", "gto_rpa03g.xls",
+                    package = "invicodatr", mustWork = TRUE) %>%
+    read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g()
+  expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
+  expect_equal(ncol(df), 11)
+
+})

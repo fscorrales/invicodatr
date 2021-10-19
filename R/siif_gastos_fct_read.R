@@ -291,3 +291,68 @@ read_siif_comprobantes_gtos_partida_rcg01_par <- function(path){
   invisible(db)
 
 }
+
+read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- function(path){
+
+  required_ext <- "xls"
+  required_ncol <- 30
+  required_title <- "DETALLE DE DOCUMENTOS ORDENADOS. PARTIDA"
+  required_nvar <- 11
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  suppressMessages(
+    db <- readxl::read_excel(path,
+                             col_types = "text",
+                             col_names = FALSE)
+  )
+
+  read_ncol <- ncol(db)
+
+  if (read_ncol != required_ncol) {
+    abort_bad_ncol(path, read_ncol, required_ncol)
+  }
+
+  read_title <- stringr::str_sub(db$...18[4], 1,
+                                 stringr::str_length(db$...18[4]) - 10)
+
+  if (is.na(read_title) | (read_title != required_title)) {
+    abort_bad_title(path, read_title, required_title)
+  }
+
+  db <- db %>%
+    dplyr::mutate(ejercicio = stringr::str_sub(...18[2], -4)) %>%
+    dplyr::select(.data$ejercicio, ...1, ...5, ...8, ...11,
+                  ...14, ...17, ...19, ...21, ...23) %>%
+    utils::tail(-20) %>%
+    dplyr::filter(...1 != is.na(...1)) %>%
+    dplyr::transmute(ejercicio = .data$ejercicio,
+                     nro_entrada = readr::parse_integer(...1),
+                     nro_origen = readr::parse_integer(...5),
+                     monto = readr::parse_number(...8,
+                                                 locale = readr::locale(decimal_mark = ".")),
+                     mes =  readr::parse_integer(...11),
+                     fecha = as.Date(readr::parse_integer(...14),
+                                     origin = "1899-12-30"),
+                     partida =  ...17,
+                     grupo = stringr::str_c(
+                       stringr::str_sub(.data$partida, 1,1), "00", ""),
+                     nro_expte = ...19,
+                     glose = ...21,
+                     beneficiario = ...23)
+
+  process_nvar <- ncol(db)
+
+  # if (process_nvar != required_nvar) {
+  #   abort_bad_nvar(path, process_nvar, required_nvar)
+  # }
+
+  invisible(db)
+
+}
