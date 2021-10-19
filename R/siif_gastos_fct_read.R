@@ -30,21 +30,21 @@ read_siif_ppto_gtos_fte_rf602 <- function(path){
   }
 
   read_title <- (db$...1[4])
-  read_title <- stringi::stri_sub(read_title, 1,
-                                  (stringi::stri_length(read_title) - 5))
+  read_title <- stringr::str_sub(read_title, 1,
+                                  (stringr::str_length(read_title) - 5))
 
   if (is.na(read_title) | (read_title != required_title)) {
     abort_bad_title(path, read_title, required_title)
   }
 
   db <- db %>%
-    dplyr::transmute(ejercicio = stringi::stri_sub(...1[4], -4),
-                     programa = stringi::stri_pad(...1, 2, pad = "0"),
-                     subprograma = stringi::stri_pad(...2, 2, pad = "0"),
-                     proyecto = stringi::stri_pad(...5, 2, pad = "0"),
-                     actividad = stringi::stri_pad(...6, 2, pad = "0"),
+    dplyr::transmute(ejercicio = stringr::str_sub(...1[4], -4),
+                     programa = stringr::str_pad(...1, 2, pad = "0"),
+                     subprograma = stringr::str_pad(...2, 2, pad = "0"),
+                     proyecto = stringr::str_pad(...5, 2, pad = "0"),
+                     actividad = stringr::str_pad(...6, 2, pad = "0"),
                      partida = ...7,
-                     grupo = stringi::stri_c(stringi::stri_sub(.data$partida, 1,1), "00", ""),
+                     grupo = stringr::str_c(stringr::str_sub(.data$partida, 1,1), "00", ""),
                      fuente = ...8,
                      org = ...9,
                      credito_original = ...12,
@@ -97,14 +97,14 @@ read_siif_ppto_gtos_desc_rf610 <- function(path){
     abort_bad_ncol(path, read_ncol, required_ncol)
   }
 
-  read_title <- stringi::stri_c(db$...32[1], db$...32[3], sep = " ")
+  read_title <- stringr::str_c(db$...32[1], db$...32[3], sep = " ")
 
   if (is.na(read_title) | (read_title != required_title)) {
     abort_bad_title(path, read_title, required_title)
   }
 
   db <- db %>%
-    dplyr::transmute(ejercicio = stringi::stri_sub(...33[8], -4),
+    dplyr::transmute(ejercicio = stringr::str_sub(...33[8], -4),
                      programa = ...5,
                      subprograma = ...9,
                      proyecto = ...14,
@@ -142,7 +142,7 @@ read_siif_ppto_gtos_desc_rf610 <- function(path){
                     remove = T, extra = "merge") %>%
     dplyr::mutate_at(c("programa", "subprograma",
                        "proyecto", "actividad"),
-                     stringi::stri_pad, width = 2, pad = "0")
+                     stringr::str_pad, width = 2, pad = "0")
 
   process_nvar <- ncol(db)
 
@@ -188,7 +188,7 @@ read_siif_comprobantes_gtos_rcg01_uejp <- function(path){
   }
 
   db <- db %>%
-    dplyr::mutate(ejercicio = stringi::stri_sub(...1[2], -4)) %>%
+    dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4)) %>%
     dplyr::select(-...18, -...19)
 
   names(db) <- c("nro_entrada", "nro_origen", "fuente", "clase_reg",
@@ -249,14 +249,14 @@ read_siif_comprobantes_gtos_partida_rcg01_par <- function(path){
     abort_bad_ncol(path, read_ncol, required_ncol)
   }
 
-  read_title <- stringi::stri_c(db$...1[4], db$...1[5], sep = " ")
+  read_title <- stringr::str_c(db$...1[4], db$...1[5], sep = " ")
 
   if (is.na(read_title) | (read_title != required_title)) {
     abort_bad_title(path, read_title, required_title)
   }
 
   db <- db %>%
-    dplyr::mutate(ejercicio = stringi::stri_sub(...1[2], -4)) %>%
+    dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4)) %>%
     dplyr::select(-...2, -...4, -...9) %>%
     utils::tail(-14) %>%
     dplyr::filter(...1 != is.na(...1)) %>%
@@ -269,8 +269,8 @@ read_siif_comprobantes_gtos_partida_rcg01_par <- function(path){
                      fecha = as.Date(readr::parse_integer(...8),
                                      origin = "1899-12-30"),
                      partida =  ...10,
-                     grupo = stringi::stri_c(
-                       stringi::stri_sub(.data$partida, 1,1), "00", ""),
+                     grupo = stringr::str_c(
+                       stringr::str_sub(.data$partida, 1,1), "00", ""),
                      monto = readr::parse_number(...11,
                                                  locale = readr::locale(decimal_mark = ".")),
                      cuit =  ...12,
@@ -319,15 +319,15 @@ read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- function(path){
     abort_bad_ncol(path, read_ncol, required_ncol)
   }
 
-  read_title <- stringi::stri_sub(db$...18[4], 1,
-                                 stringi::stri_length(db$...18[4]) - 10)
+  read_title <- stringr::str_sub(db$...18[4], 1,
+                                 stringr::str_length(db$...18[4]) - 10)
 
   if (is.na(read_title) | (read_title != required_title)) {
     abort_bad_title(path, read_title, required_title)
   }
 
   db <- db %>%
-    dplyr::mutate(ejercicio = stringi::stri_sub(...18[2], -4)) %>%
+    dplyr::mutate(ejercicio = stringr::str_sub(...18[2], -4)) %>%
     dplyr::select(.data$ejercicio, ...1, ...5, ...8, ...11,
                   ...14, ...17, ...19, ...21, ...23) %>%
     utils::tail(-20) %>%
@@ -341,8 +341,8 @@ read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- function(path){
                      fecha = as.Date(readr::parse_integer(...14),
                                      origin = "1899-12-30"),
                      partida =  ...17,
-                     grupo = stringi::stri_c(
-                       stringi::stri_sub(.data$partida, 1,1), "00", ""),
+                     grupo = stringr::str_c(
+                       stringr::str_sub(.data$partida, 1,1), "00", ""),
                      nro_expte = ...19,
                      glose = ...21,
                      beneficiario = ...23)

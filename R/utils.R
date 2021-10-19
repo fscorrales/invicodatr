@@ -5,14 +5,14 @@ utils::globalVariables(c(paste("...", 1:70, sep = ""),
 
 div_path <- function(full_path){
 
-  Ans <- stringi::stri_split(full_path, "/", simplify = T) %>%
+  Ans <- stringr::str_split(full_path, "/", simplify = T) %>%
     as.vector()
 
 }
 
 output_path <- function(){
 
-  # Ans <- stringi::stri_split(getwd(), "/", simplify = T)
+  # Ans <- stringr::str_split(getwd(), "/", simplify = T)
   Ans <- div_path(getwd())
   Ans <- Ans[1:(length(Ans)-1)] %>%
     sapply(function(x) paste0(x, "/")) %>%
