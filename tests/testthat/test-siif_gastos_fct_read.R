@@ -42,3 +42,12 @@ test_that("reading gto_rpa03g returns a tibble", {
   expect_equal(ncol(df), 11)
 
 })
+
+test_that("reading rao01 returns a tibble", {
+  df <- system.file("extdata", "rao01.xls",
+                    package = "invicodatr", mustWork = TRUE) %>%
+    read_siif_retenciones_por_codigo_rao01()
+  expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
+  expect_equal(ncol(df), 8)
+
+})

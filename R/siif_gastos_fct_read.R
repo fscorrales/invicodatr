@@ -356,3 +356,60 @@ read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- function(path){
   invisible(db)
 
 }
+
+read_siif_retenciones_por_codigo_rao01 <- function(path){
+
+  required_ext <- "xls"
+  required_ncol <- 20
+  required_title <- "Provincia de Corrientes"
+  required_nvar <- 8
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  suppressMessages(
+    db <- readxl::read_excel(path,
+                             col_types = "text",
+                             col_names = FALSE)
+  )
+
+  read_ncol <- ncol(db)
+
+  if (read_ncol != required_ncol) {
+    abort_bad_ncol(path, read_ncol, required_ncol)
+  }
+
+  read_title <- db$...2[2]
+
+  if (is.na(read_title) | (read_title != required_title)) {
+    abort_bad_title(path, read_title, required_title)
+  }
+
+  db <- db %>%
+    utils::tail(-16) %>%
+    dplyr::filter(...1 != is.na(...1)) %>%
+    dplyr::transmute(fecha = as.Date(readr::parse_integer(...12),
+                                     origin = "1899-12-30"),
+                     ejercicio = as.character(lubridate::year(.data$fecha)),
+                     nro_entrada = readr::parse_integer(...1),
+                     nro_origen = readr::parse_integer(...5),
+                     cod_retencion = ...4,
+                     desc_retencion =  ...7,
+                     monto = readr::parse_number(...11,
+                                                 locale = readr::locale(decimal_mark = ".")),
+                     cta_cte =  ...14)
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
+
+  invisible(db)
+
+}

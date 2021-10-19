@@ -138,30 +138,10 @@ rpw_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
+rpw_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
                                                     write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      utils::tail(-16) %>%
-      dplyr::filter(...1 != is.na(...1)) %>%
-      dplyr::transmute(fecha = as.Date(readr::parse_integer(...12),
-                                       origin = "1899-12-30"),
-                       ejercicio = as.character(lubridate::year(.data$fecha)),
-                       nro_entrada = readr::parse_integer(...1),
-                       nro_origen = readr::parse_integer(...5),
-                       cod_retencion = ...4,
-                       desc_retencion =  ...7,
-                       monto = readr::parse_number(...11,
-                                                   locale = readr::locale(decimal_mark = ".")),
-                       cta_cte =  ...14)
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_retenciones_por_codigo_rao01(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Listado Retenciones Practicada por Codigo SIIF (rao01).csv")
@@ -172,7 +152,7 @@ read_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
 
