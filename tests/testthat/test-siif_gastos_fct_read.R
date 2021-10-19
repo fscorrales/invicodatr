@@ -69,3 +69,12 @@ test_that("reading rdeu012 returns a tibble", {
   expect_equal(ncol(df), 15)
 
 })
+
+test_that("reading rdeu012b2_c returns a tibble", {
+  df <- system.file("extdata", "rdeu012b2_c.csv",
+                    package = "invicodatr", mustWork = TRUE) %>%
+    read_siif_deuda_flotante_tg_rdeu012b2_c()
+  expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
+  expect_equal(ncol(df), 14)
+
+})

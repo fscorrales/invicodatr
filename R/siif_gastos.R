@@ -215,47 +215,10 @@ rpw_siif_deuda_flotante <- function(path, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
+rpw_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readr::read_csv(x, col_names = FALSE,
-                          col_types = readr::cols(.default = "c"),
-                          locale = readr::locale(encoding = stringi::stri_enc_get()))
-
-    db <- db %>%
-      dplyr::mutate(fecha_desde = stringr::str_sub(X1[7], 7 ,17),
-                    fecha_hasta = stringr::str_sub(X1[7], -10)) %>%
-      dplyr::filter(!is.na(X6)) %>%
-      utils::head(-2) %>%
-      dplyr::mutate(ejercicio = ifelse(is.na(X1), stringr::str_sub(X2[], -4), NA)) %>%
-      dplyr::transmute(ejercicio = zoo::na.locf(.data$ejercicio, fromLast = TRUE),
-                       fuente = X3,
-                       fecha_desde = lubridate::dmy(.data$fecha_desde),
-                       fecha_hasta = lubridate::dmy(.data$fecha_hasta),
-                       mes_hasta = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha_hasta),
-                                                                   2, pad = "0"),
-                                                  lubridate::year(.data$fecha_hasta), sep = "/"),
-                       nro_entrada = X1,
-                       nro_origen = X2,
-                       cc = stringr::str_c(.data$nro_entrada,
-                                           stringr::str_sub(.data$ejercicio, -2), sep = "/"),
-                       org_fin = X4,
-                       monto = X5,
-                       saldo = X6,
-                       nro_expte = X7,
-                       cta_cte = X8,
-                       glosa = X9) %>%
-      dplyr::filter(!is.na(.data$fuente),
-                    .data$fuente != "Fte") %>%
-      dplyr::mutate(nro_entrada = readr::parse_integer(.data$nro_entrada),
-                    nro_origen = readr::parse_integer(.data$nro_origen)) %>%
-      dplyr::mutate_at(c("monto", "saldo"),
-                       ~round(readr::parse_number(.,
-                                                  locale = readr::locale(decimal_mark = ","))))
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_deuda_flotante_tg_rdeu012b2_c(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Deuda Flotante TG SIIF (rdeu012b2_c).csv")

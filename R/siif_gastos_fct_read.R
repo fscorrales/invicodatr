@@ -556,3 +556,81 @@ read_siif_deuda_flotante_rdeu012 <- function(path){
   invisible(db)
 
 }
+
+read_siif_deuda_flotante_tg_rdeu012b2_c <- function(path){
+
+  required_ext <- "csv"
+  required_ncol <- 12
+  required_title <- "DETALLE DE COMPROBANTES DE GASTOS ORDENADOS Y NO PAGADOS (DEUDA FLOTANTE)"
+  required_nvar <- 14
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  # db <- readr::read_csv(x, col_names = FALSE,
+  #                       col_types = readr::cols(.default = "c"),
+  #                       locale = readr::locale(encoding = stringi::stri_enc_get()))
+
+  suppressMessages(
+    db <- vroom::vroom(path, col_names = FALSE, delim = ",",
+                       col_types = vroom::cols(.default = "c"),
+                       locale = vroom::locale(encoding = stringi::stri_enc_get()))
+  )
+
+  read_ncol <- ncol(db)
+
+  if (read_ncol != required_ncol) {
+    abort_bad_ncol(path, read_ncol, required_ncol)
+  }
+
+  read_title <- (db$X5[4])
+
+  if (is.na(read_title) | (read_title != required_title)) {
+    abort_bad_title(path, read_title, required_title)
+  }
+
+  db <- db %>%
+    dplyr::mutate(fecha_desde = stringr::str_sub(X1[7], 7 ,17),
+                  fecha_hasta = stringr::str_sub(X1[7], -10)) %>%
+    dplyr::filter(!is.na(X6)) %>%
+    utils::head(-2) %>%
+    dplyr::mutate(ejercicio = ifelse(is.na(X1), stringr::str_sub(X2[], -4), NA)) %>%
+    dplyr::transmute(ejercicio = zoo::na.locf(.data$ejercicio, fromLast = TRUE),
+                     fuente = X3,
+                     fecha_desde = lubridate::dmy(.data$fecha_desde),
+                     fecha_hasta = lubridate::dmy(.data$fecha_hasta),
+                     mes_hasta = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha_hasta),
+                                                                 2, pad = "0"),
+                                                lubridate::year(.data$fecha_hasta), sep = "/"),
+                     nro_entrada = X1,
+                     nro_origen = X2,
+                     cc = stringr::str_c(.data$nro_entrada,
+                                         stringr::str_sub(.data$ejercicio, -2), sep = "/"),
+                     org_fin = X4,
+                     monto = X5,
+                     saldo = X6,
+                     nro_expte = X7,
+                     cta_cte = X8,
+                     glosa = X9) %>%
+    dplyr::filter(!is.na(.data$fuente),
+                  .data$fuente != "Fte") %>%
+    dplyr::mutate(nro_entrada = readr::parse_integer(.data$nro_entrada),
+                  nro_origen = readr::parse_integer(.data$nro_origen)) %>%
+    dplyr::mutate_at(c("monto", "saldo"),
+                     ~round(readr::parse_number(.,
+                                                locale = readr::locale(decimal_mark = ","))))
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
+
+  invisible(db)
+
+}
