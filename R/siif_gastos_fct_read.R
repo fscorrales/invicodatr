@@ -478,3 +478,81 @@ read_siif_resumen_fdos_rfondo07tp <- function(path){
   invisible(db)
 
 }
+
+read_siif_deuda_flotante_rdeu012 <- function(path){
+
+  required_ext <- "xls"
+  required_ncol <- 23
+  required_title <- "DETALLE DE COMPROBANTES DE GASTOS ORDENADOS Y NO PAGADOS (DEUDA FLOTANTE)"
+  required_nvar <- 15
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  suppressMessages(
+    db <- readxl::read_excel(path,
+                             col_types = "text",
+                             col_names = FALSE)
+  )
+
+  read_ncol <- ncol(db)
+
+  if (read_ncol != required_ncol) {
+    abort_bad_ncol(path, read_ncol, required_ncol)
+  }
+
+  read_title <- (db$...1[8])
+
+  if (is.na(read_title) | (read_title != required_title)) {
+    abort_bad_title(path, read_title, required_title)
+  }
+
+  suppressWarnings(
+    db <- db %>%
+      dplyr::mutate(fuente = ifelse(...5 == "27", NA, as.numeric(...5)),
+                    fecha_desde = stringr::str_sub(...1[14], 7 ,17),
+                    fecha_hasta = stringr::str_sub(...1[14], -10))
+  )
+
+  db <- db %>%
+    utils::tail(-11) %>%
+    dplyr::transmute(fuente = zoo::na.locf(.data$fuente),
+                     fecha_desde = lubridate::dmy(.data$fecha_desde),
+                     fecha_hasta = lubridate::dmy(.data$fecha_hasta),
+                     mes_hasta = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha_hasta),
+                                                                 2, pad = "0"),
+                                                lubridate::year(.data$fecha_hasta), sep = "/"),
+                     nro_entrada = ...1,
+                     nro_origen = ...3,
+                     fecha_aprobado = ...6,
+                     org_fin = ...8,
+                     monto = ...9,
+                     saldo = ...12,
+                     nro_expte = ...13,
+                     cta_cte = ...14,
+                     referencia = ...16,
+                     cuit = ...17,
+                     beneficiario = ...18) %>%
+    dplyr::filter(!is.na(.data$cuit),
+                  !is.na(.data$nro_entrada)) %>%
+    dplyr::mutate(fecha_aprobado = as.Date(readr::parse_integer(.data$fecha_aprobado),
+                                           origin = "1899-12-30"),
+                  nro_entrada = readr::parse_integer(.data$nro_entrada),
+                  nro_origen = readr::parse_integer(.data$nro_origen),
+                  monto = round(readr::parse_double(.data$monto), 2),
+                  saldo = round(readr::parse_double(.data$saldo), 2))
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
+
+  invisible(db)
+
+}

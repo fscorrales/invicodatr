@@ -60,3 +60,12 @@ test_that("reading rfondo07tp returns a tibble", {
   expect_equal(ncol(df), 8)
 
 })
+
+test_that("reading rdeu012 returns a tibble", {
+  df <- system.file("extdata", "rdeu012.xls",
+                    package = "invicodatr", mustWork = TRUE) %>%
+    read_siif_deuda_flotante_rdeu012()
+  expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
+  expect_equal(ncol(df), 15)
+
+})
