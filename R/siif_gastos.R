@@ -194,8 +194,8 @@ read_siif_resumen_fdos <- function(path, write_csv = FALSE,
                              col_names = FALSE)
 
     db <- db %>%
-      dplyr::mutate(ejercicio = stringr::str_sub(...1[3], -4),
-                    tipo_comprobante = stringr::str_sub(...2[10], - (length(...2[10]) - 72)))
+      dplyr::mutate(ejercicio = stringi::stri_sub(...1[3], -4),
+                    tipo_comprobante = stringi::stri_sub(...2[10], - (length(...2[10]) - 72)))
 
     db <- db %>%
       utils::tail(-14) %>%
@@ -246,13 +246,13 @@ read_siif_deuda_flotante <- function(path, write_csv = FALSE,
 
     db <- db %>%
       dplyr::mutate(fuente = ifelse(...5 == "27", NA, as.numeric(...5)),
-                    fecha_desde = stringr::str_sub(...1[14], 7 ,17),
-                    fecha_hasta = stringr::str_sub(...1[14], -10)) %>%
+                    fecha_desde = stringi::stri_sub(...1[14], 7 ,17),
+                    fecha_hasta = stringi::stri_sub(...1[14], -10)) %>%
       utils::tail(-11) %>%
       dplyr::transmute(fuente = zoo::na.locf(.data$fuente),
                        fecha_desde = lubridate::dmy(.data$fecha_desde),
                        fecha_hasta = lubridate::dmy(.data$fecha_hasta),
-                       mes_hasta = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha_hasta),
+                       mes_hasta = stringi::stri_c(stringi::stri_pad(lubridate::month(.data$fecha_hasta),
                                                                    2, pad = "0"),
                                                   lubridate::year(.data$fecha_hasta), sep = "/"),
                        nro_entrada = ...1,
@@ -308,22 +308,22 @@ read_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
                           locale = readr::locale(encoding = stringi::stri_enc_get()))
 
     db <- db %>%
-      dplyr::mutate(fecha_desde = stringr::str_sub(X1[7], 7 ,17),
-                    fecha_hasta = stringr::str_sub(X1[7], -10)) %>%
+      dplyr::mutate(fecha_desde = stringi::stri_sub(X1[7], 7 ,17),
+                    fecha_hasta = stringi::stri_sub(X1[7], -10)) %>%
       dplyr::filter(!is.na(X6)) %>%
       utils::head(-2) %>%
-      dplyr::mutate(ejercicio = ifelse(is.na(X1), stringr::str_sub(X2[], -4), NA)) %>%
+      dplyr::mutate(ejercicio = ifelse(is.na(X1), stringi::stri_sub(X2[], -4), NA)) %>%
       dplyr::transmute(ejercicio = zoo::na.locf(.data$ejercicio, fromLast = TRUE),
                        fuente = X3,
                        fecha_desde = lubridate::dmy(.data$fecha_desde),
                        fecha_hasta = lubridate::dmy(.data$fecha_hasta),
-                       mes_hasta = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha_hasta),
+                       mes_hasta = stringi::stri_c(stringi::stri_pad(lubridate::month(.data$fecha_hasta),
                                                                    2, pad = "0"),
                                                   lubridate::year(.data$fecha_hasta), sep = "/"),
                        nro_entrada = X1,
                        nro_origen = X2,
-                       cc = stringr::str_c(.data$nro_entrada,
-                                           stringr::str_sub(.data$ejercicio, -2), sep = "/"),
+                       cc = stringi::stri_c(.data$nro_entrada,
+                                           stringi::stri_sub(.data$ejercicio, -2), sep = "/"),
                        org_fin = X4,
                        monto = X5,
                        saldo = X6,
@@ -371,7 +371,7 @@ read_siif_pagos <- function(path, write_csv = FALSE,
 
     db <- db %>%
       utils::tail(-18) %>%
-      dplyr::mutate_all(stringr::str_replace_all,
+      dplyr::mutate_all(stringi::stri_replace_all,
                         pattern = "[\r\n]", replacement = "") %>%
       dplyr::transmute(ejercicio = ...9,
                        entidad = ...6,

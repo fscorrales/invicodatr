@@ -26,7 +26,6 @@ Imports:
     rlang,
     RSQLite,
     stringi,
-    stringr,
     tibble,
     tidyr,
     tools,
