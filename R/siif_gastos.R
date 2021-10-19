@@ -87,43 +87,10 @@ rpw_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
+rpw_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
                                         write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4)) %>%
-      dplyr::select(-...2, -...4, -...9) %>%
-      utils::tail(-14) %>%
-      dplyr::filter(...1 != is.na(...1)) %>%
-      dplyr::transmute(ejercicio = .data$ejercicio,
-                       nro_entrada = readr::parse_integer(...1),
-                       nro_origen = readr::parse_integer(...3),
-                       fuente =  ...5,
-                       clase_reg =  ...6,
-                       clase_gto =  ...7,
-                       fecha = as.Date(readr::parse_integer(...8),
-                                    origin = "1899-12-30"),
-                       partida =  ...10,
-                       grupo = stringr::str_c(
-                         stringr::str_sub(.data$partida, 1,1), "00", ""),
-                       monto = readr::parse_number(...11,
-                                                   locale = readr::locale(decimal_mark = ".")),
-                       cuit =  ...12,
-                       beneficiario =  ...13,
-                       nro_expte = ...14,
-                       cta_cte =  ...15,
-                       comprometido = ifelse(...16 == "S", T, F),
-                       verificado = ifelse(...17 == "S", T, F),
-                       aprobado = ifelse(...18 == "S", T, F),
-                       pagado = ifelse(...19 == "S", T, F))
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_comprobantes_gtos_partida_rcg01_par(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Comprobantes Gastos Ingresados con Partida SIIF (rcg01_par).csv")
@@ -134,7 +101,7 @@ read_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
 
