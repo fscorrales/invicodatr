@@ -240,82 +240,10 @@ rpw_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
 #'
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
-read_siif_pagos <- function(path, write_csv = FALSE,
+rpw_siif_pagos <- function(path, write_csv = FALSE,
                                      write_sqlite = FALSE){
 
-  Ans <- purrr::map_df(path, function(x) {
-
-    db <- readxl::read_excel(x,
-                             col_types = "text",
-                             col_names = FALSE)
-
-    db <- db %>%
-      utils::tail(-18) %>%
-      dplyr::mutate_all(stringr::str_replace_all,
-                        pattern = "[\r\n]", replacement = "") %>%
-      dplyr::transmute(ejercicio = ...9,
-                       entidad = ...6,
-                       nro_entrada = ...8,
-                       ejercicio_origen = ...1,
-                       nro_cap = ...10,
-                       fuente = ...12,
-                       fecha_pago = ...13,
-                       cta_cte_pago = ...16,
-                       nro_interno = ...18,
-                       chq_bco = ...19,
-                       tipo = ...21,
-                       cuit_pago = ...23,
-                       beneficiario = ...25,
-                       glosa = ...27,
-                       monto = ...29,
-                       ingresos = ...38,
-                       uej = ...42) %>%
-      dplyr::filter(!is.na(.data$ejercicio_origen)) %>%
-      dplyr::mutate(fecha_pago = as.Date(readr::parse_integer(.data$fecha_pago),
-                                         origin = "1899-12-30"),
-                    monto = round(readr::parse_double(.data$monto), 2),
-                    ingresos = round(readr::parse_double(.data$ingresos), 2))
-
-    #Deleting some cols
-    db <- db %>%
-      dplyr::select(-.data$ingresos, -.data$uej, -.data$chq_bco,
-                    -.data$nro_interno, -.data$ejercicio_origen, -.data$entidad)
-
-    #ERROR con los ANP (el reporte solo trae un CAP por lo que el mov. queda anulado)
-    db <- db %>%
-      dplyr::filter(.data$tipo != "ANP")
-
-    # #Transformamos los ANP en CAP
-    # BD <- BD %>%
-    #   mutate(Tipo = ifelse(Tipo == "ANP", "CAP", Tipo))
-
-    #Generamos un proxy del Cta Cte Gasto
-    carga_gasto <- db %>%
-      dplyr::filter(!.data$cuit_pago %in% c(30709110078, 33693450239)) %>%
-      dplyr::group_by(.data$nro_entrada, .data$tipo) %>%
-      dplyr::filter(.data$monto == max(.data$monto)) %>%
-      dplyr::select(.data$nro_entrada, .data$tipo,
-                    cta_cte = .data$cta_cte_pago, cuit = .data$cuit_pago) %>%
-      unique()
-
-    db <- db %>%
-      dplyr::left_join(carga_gasto) %>%
-      dplyr::mutate(cta_cte = dplyr::if_else(is.na(.data$cta_cte),
-                                             .data$cta_cte_pago, .data$cta_cte),
-                    cuit = dplyr::if_else(is.na(.data$cuit),
-                                          .data$cuit_pago, .data$cuit))
-
-    # #Volvemos a crear el Tipo ANP
-    # BD <- BD %>%
-    #   mutate(Tipo = ifelse(Monto < 0, "ANP", Tipo))
-
-    db <- db %>%
-      dplyr::select(.data$ejercicio, .data$nro_entrada, .data$tipo,
-                    .data$fuente, .data$fecha_pago, .data$cta_cte,
-                    .data$cuit, .data$cta_cte_pago, .data$cuit_pago,
-                    .data$beneficiario, .data$monto, dplyr::everything())
-
-  })
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_pagos_rtr03(.x)))
 
   if (write_csv == TRUE) {
     write_csv(Ans, "Pagos SIIF (rtr03).csv")
@@ -326,6 +254,6 @@ read_siif_pagos <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
