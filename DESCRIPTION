@@ -31,6 +31,7 @@ Imports:
     tidyr,
     tools,
     utils,
+    vroom,
     zoo
 Suggests: 
     testthat (>= 3.0.0)
