@@ -362,7 +362,7 @@ read_siif_retenciones_por_codigo_rao01 <- function(path){
   required_ext <- "xls"
   required_ncol <- 20
   required_title <- "Provincia de Corrientes"
-  required_nvar <- 8
+  required_nvar <- 7
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -397,7 +397,6 @@ read_siif_retenciones_por_codigo_rao01 <- function(path){
                                      origin = "1899-12-30"),
                      ejercicio = as.character(lubridate::year(.data$fecha)),
                      nro_entrada = readr::parse_integer(...1),
-                     nro_origen = readr::parse_integer(...5),
                      cod_retencion = ...4,
                      desc_retencion =  ...7,
                      monto = readr::parse_number(...11,
