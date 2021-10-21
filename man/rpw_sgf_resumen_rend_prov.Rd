@@ -2,7 +2,7 @@
 % Please edit documentation in R/sgf.R
 \name{rpw_sgf_resumen_rend_prov}
 \alias{rpw_sgf_resumen_rend_prov}
-\title{Read, process and write SSCC's Movimientos Banco report}
+\title{Read, process and write SGF's Resumen de Rendiciones por proveedor report}
 \usage{
 rpw_sgf_resumen_rend_prov(path, write_csv = FALSE, write_sqlite = FALSE)
 }
@@ -15,6 +15,6 @@ assigned, a dataframe that combine all of them will be return.}
 \item{write_sqlite}{logical. Should a sqlite file be generated?}
 }
 \description{
-Returns a cleaned tibble version of SSCC's report. Also, a csv and sqlite
+Returns a cleaned tibble version of SGF's report. Also, a csv and sqlite
 file could be exported.
 }

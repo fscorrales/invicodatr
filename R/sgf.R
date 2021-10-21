@@ -2,9 +2,9 @@
 #' @importFrom rlang .data
 NULL
 
-#' Read, process and write SSCC's Movimientos Banco report
+#' Read, process and write SGF's Resumen de Rendiciones por proveedor report
 #'
-#' Returns a cleaned tibble version of SSCC's report. Also, a csv and sqlite
+#' Returns a cleaned tibble version of SGF's report. Also, a csv and sqlite
 #'  file could be exported.
 #'
 #' @param path a character vector of full path names. If more than one path is
