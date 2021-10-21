@@ -13,7 +13,7 @@ NULL
 #' @param write_sqlite logical. Should a sqlite file be generated?
 #'
 #' @export
-rpw_siif_mayor_contable_rcocc31 <- function(path = NULL, write_csv = FALSE,
+rpw_siif_mayor_contable <- function(path = NULL, write_csv = FALSE,
                                       write_sqlite = FALSE){
 
   Ans <- purrr::map_df(path, ~ try_read(read_siif_mayor_contable_rcocc31(.x)))
