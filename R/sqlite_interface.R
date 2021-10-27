@@ -146,7 +146,7 @@ filter_sqlite <- function(sqlite_name, sql_query, ...) {
 execute_sqlite <- function(sqlite_name, sql_query, ...) {
 
   con <- connect_sqlite(sqlite_name)
-  rs <- DBI::dbSendStatement(con, SQLquery, ...)
+  rs <- DBI::dbSendStatement(con, sql_query, ...)
   x <- DBI::dbGetRowsAffected(rs)
   DBI::dbClearResult(rs)
   DBI::dbDisconnect(con)
