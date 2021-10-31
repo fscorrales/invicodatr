@@ -99,27 +99,27 @@ try_read <- function(my_func) {
 
   tryCatch(
     error_bad_path = function(cnd) {
-      message(paste0("Abort: ", conditionMessage(cnd)))
+      warning(paste0("Abort: ", conditionMessage(cnd)))
       tibble::tibble()
     },
     error_bad_ext = function(cnd) {
-      message(paste0("Abort: ", conditionMessage(cnd)))
+      warning(paste0("Abort: ", conditionMessage(cnd)))
       tibble::tibble()
     },
     error_bad_ncol = function(cnd) {
-      message(paste0("Abort: ", conditionMessage(cnd)))
+      warning(paste0("Abort: ", conditionMessage(cnd)))
       tibble::tibble()
     },
     error_bad_title = function(cnd) {
-      message(paste0("Abort: ", conditionMessage(cnd)))
+      warning(paste0("Abort: ", conditionMessage(cnd)))
       tibble::tibble()
     },
     error_bad_nvar = function(cnd) {
-      message(paste0("Abort: ", conditionMessage(cnd)))
+      warning(paste0("Abort: ", conditionMessage(cnd)))
       tibble::tibble()
     },
     error = function(cnd) {
-      message(paste0("Error: ", conditionMessage(cnd)))
+      warning(paste0("Error: ", conditionMessage(cnd)))
       tibble::tibble()
     },
     my_func
