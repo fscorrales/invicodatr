@@ -37,12 +37,12 @@ read_siif_mayor_contable_rcocc31 <- function(path){
 
   db <- db %>%
     dplyr::mutate(ejercicio = stringr::str_sub(...1[2], -4),
-                  cta_cte = paste(...6[9], ...11[9], ...12[9], sep = "-"))
+                  cta_contable = paste(...6[9], ...11[9], ...12[9], sep = "-"))
 
   db <- db %>%
-    dplyr::select(.data$cta_cte, .data$ejercicio, ...3, ...9, ...14,
+    dplyr::select(.data$cta_contable, .data$ejercicio, ...3, ...9, ...14,
                   ...19, ...21, ...24, ...25, ...27)
-  names(db) <- c("cta_cte", "ejercicio", "nro_entrada", "fecha_aprobado",
+  names(db) <- c("cta_contable", "ejercicio", "nro_entrada", "fecha_aprobado",
                  "auxiliar_1", "auxiliar_2", "tipo_comprobante",
                  "debitos", "creditos", "saldo")
   db <- utils::tail(db, -18) %>%
