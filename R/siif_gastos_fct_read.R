@@ -344,7 +344,7 @@ read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- function(path){
                      grupo = stringr::str_c(
                        stringr::str_sub(.data$partida, 1,1), "00", ""),
                      nro_expte = ...19,
-                     glose = ...21,
+                     glosa = ...21,
                      beneficiario = ...23)
 
   process_nvar <- ncol(db)
