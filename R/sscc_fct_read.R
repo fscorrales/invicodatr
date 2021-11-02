@@ -38,7 +38,7 @@ read_sscc_banco_invico <- function(path){
   db <- db %>%
     dplyr::select(X21:X29)
 
-  names(db) <- c("fecha","movimiento","cta_cta", "concepto",
+  names(db) <- c("fecha","movimiento","cta_cte", "concepto",
                  "beneficiario","moneda","libramiento",
                  "imputacion", "monto")
   db <- db %>%
