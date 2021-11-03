@@ -24,7 +24,7 @@ rpw_siif_mayor_contable <- function(path = NULL, write_csv = FALSE,
     }
 
     if (write_sqlite == TRUE) {
-      write_sqlite("SIIF", "mayor_contable_rcocc31",
+      write_sqlite("siif", "mayor_contable_rcocc31",
                    df = Ans, overwrite = TRUE)
     }
   }

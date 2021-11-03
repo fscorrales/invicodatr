@@ -23,7 +23,7 @@ rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "ppto_gtos_fte_rf602",
+    write_sqlite("siif", "ppto_gtos_fte_rf602",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -48,7 +48,7 @@ rpw_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "ppto_gtos_desc_rf610",
+    write_sqlite("siif", "ppto_gtos_desc_rf610",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -72,7 +72,7 @@ rpw_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "comprobantes_gtos_rcg01_uejp",
+    write_sqlite("siif", "comprobantes_gtos_rcg01_uejp",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -97,7 +97,7 @@ rpw_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "comprobantes_gtos_partida_rcg01_par",
+    write_sqlite("siif", "comprobantes_gtos_partida_rcg01_par",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -122,7 +122,7 @@ rpw_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "comprobantes_gtos_gpo_partida_gto_rpa03g",
+    write_sqlite("siif", "comprobantes_gtos_gpo_partida_gto_rpa03g",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -148,7 +148,7 @@ rpw_siif_retenciones_por_codigo <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "retenciones_por_codigo_rao01",
+    write_sqlite("siif", "retenciones_por_codigo_rao01",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -174,7 +174,7 @@ rpw_siif_resumen_fdos <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "resumen_fdos_rfondo07tp",
+    write_sqlite("siif", "resumen_fdos_rfondo07tp",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -199,7 +199,7 @@ rpw_siif_deuda_flotante <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "deuda_flotante_rdeu012",
+    write_sqlite("siif", "deuda_flotante_rdeu012",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -225,7 +225,7 @@ rpw_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "deuda_flotante_tg_rdeu012b2_c",
+    write_sqlite("siif", "deuda_flotante_tg_rdeu012b2_c",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -250,7 +250,7 @@ rpw_siif_pagos <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SIIF", "pagos_rtr03",
+    write_sqlite("siif", "pagos_rtr03",
                  df = Ans, overwrite = TRUE)
   }
 

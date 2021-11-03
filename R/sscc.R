@@ -23,7 +23,7 @@ rpw_sscc_banco_invico <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SSCC", "banco_invico",
+    write_sqlite("sscc", "banco_invico",
                  df = Ans, overwrite = TRUE)
   }
 

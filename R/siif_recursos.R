@@ -24,7 +24,7 @@ rpw_siif_comprobantes_rec <- function(path = NULL, write_csv = FALSE,
     }
 
     if (write_sqlite == TRUE) {
-      write_sqlite("SIIF", "comprobantes_rec_rci02",
+      write_sqlite("siif", "comprobantes_rec_rci02",
                    df = Ans, overwrite = TRUE)
     }
   }

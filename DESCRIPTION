@@ -1,6 +1,6 @@
 Package: invicodatr
 Title: INVICO's Data Manipulation
-Version: 1.0.5
+Version: 2.0.0
 Authors@R: 
     person(given = "Fernando",
            family = "Corrales",

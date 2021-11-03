@@ -23,7 +23,7 @@ rpw_sgf_resumen_rend_prov <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("SGF", "resumen_rend_prov",
+    write_sqlite("sgf", "resumen_rend_prov",
                  df = Ans, overwrite = TRUE)
   }
 
