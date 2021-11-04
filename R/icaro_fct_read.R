@@ -1,7 +1,8 @@
-read_invico_old_obras <- function(path){
+read_icaro_old_obras <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 11
+  required_nvar <- 11
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -18,6 +19,8 @@ read_invico_old_obras <- function(path){
     db <- DBI::dbReadTable(con, "OBRAS")
   )
 
+  DBI::dbDisconnect(con)
+
   read_ncol <- ncol(db)
 
   if (read_ncol != required_ncol) {
@@ -27,29 +30,34 @@ read_invico_old_obras <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      obra = Descripcion,
-      imputacion = Imputacion,
-      partida = Partida,
-      fuente = Fuente,
-      cuit = CUIT,
-      cta_cte = Cuenta,
-      localidad = Localidad,
-      norma_legal = NormaLegal,
-      info_adicional = InformacionAdicional,
-      monto_contrato = MontoDeContrato,
-      monto_adicional = Adicional
+      obra = .data$Descripcion,
+      imputacion = .data$Imputacion,
+      partida = .data$Partida,
+      fuente = .data$Fuente,
+      cuit = .data$CUIT,
+      cta_cte = .data$Cuenta,
+      localidad = .data$Localidad,
+      norma_legal = .data$NormaLegal,
+      info_adicional = .data$InformacionAdicional,
+      monto_contrato = .data$MontoDeContrato,
+      monto_adicional = .data$Adicional
     )
 
-  DBI::dbDisconnect(con)
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_carga <- function(path){
+read_icaro_old_carga <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 14
+  required_nvar <- 14
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -66,6 +74,8 @@ read_invico_old_carga <- function(path){
     db <- DBI::dbReadTable(con, "CARGA")
   )
 
+  DBI::dbDisconnect(con)
+
   read_ncol <- ncol(db)
 
   if (read_ncol != required_ncol) {
@@ -75,32 +85,37 @@ read_invico_old_carga <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      fecha = Fecha,
-      nro_entrada = Comprobante,
-      tipo = Tipo,
-      obra = Obra,
-      imputacion = Imputacion,
-      partida = Partida,
-      fuente = Fuente,
-      importe = Importe,
-      cuit = CUIT,
-      cta_cte = Cuenta,
-      nro_certificado = Certificado,
-      avance = Avance,
-      fondo_reparo = FondoDeReparo,
-      origen = Origen
+      fecha = .data$Fecha,
+      nro_entrada = .data$Comprobante,
+      tipo = .data$Tipo,
+      obra = .data$Obra,
+      imputacion = .data$Imputacion,
+      partida = .data$Partida,
+      fuente = .data$Fuente,
+      importe = .data$Importe,
+      cuit = .data$CUIT,
+      cta_cte = .data$Cuenta,
+      nro_certificado = .data$Certificado,
+      avance = .data$Avance,
+      fondo_reparo = .data$FondoDeReparo,
+      origen = .data$Origen
     )
 
-  DBI::dbDisconnect(con)
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_programas <- function(path){
+read_icaro_old_programas <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 2
+  required_nvar <- 2
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -117,6 +132,8 @@ read_invico_old_programas <- function(path){
     db <- DBI::dbReadTable(con, "PROGRAMAS")
   )
 
+  DBI::dbDisconnect(con)
+
   read_ncol <- ncol(db)
 
   if (read_ncol != required_ncol) {
@@ -126,20 +143,25 @@ read_invico_old_programas <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      programa = Programa,
-      desc_prog = DescProg
+      programa = .data$Programa,
+      desc_prog = .data$DescProg
     )
 
-  DBI::dbDisconnect(con)
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_subprogramas <- function(path){
+read_icaro_old_subprogramas <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 3
+  required_nvar <- 3
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -165,21 +187,28 @@ read_invico_old_subprogramas <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      programa = Programa,
-      subprograma = Subprograma,
-      desc_subprog = DescSubprog
+      programa = .data$Programa,
+      subprograma = .data$Subprograma,
+      desc_subprog = .data$DescSubprog
     )
 
   DBI::dbDisconnect(con)
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_proyectos <- function(path){
+read_icaro_old_proyectos <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 3
+  required_nvar <- 3
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -196,6 +225,8 @@ read_invico_old_proyectos <- function(path){
     db <- DBI::dbReadTable(con, "PROYECTOS")
   )
 
+  DBI::dbDisconnect(con)
+
   read_ncol <- ncol(db)
 
   if (read_ncol != required_ncol) {
@@ -205,21 +236,26 @@ read_invico_old_proyectos <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      subprograma = Subprograma,
-      proyecto = Proyecto,
-      desc_proy = DescProy
+      subprograma = .data$Subprograma,
+      proyecto = .data$Proyecto,
+      desc_proy = .data$DescProy
     )
 
-  DBI::dbDisconnect(con)
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_actividades <- function(path){
+read_icaro_old_actividades <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 3
+  required_nvar <- 3
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -245,21 +281,28 @@ read_invico_old_actividades <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      proyecto = Proyecto,
-      actividad = Actividad,
-      desc_act = DescAct
+      proyecto = .data$Proyecto,
+      actividad = .data$Actividad,
+      desc_act = .data$DescAct
     )
 
   DBI::dbDisconnect(con)
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_cta_cte <- function(path){
+read_icaro_old_cta_cte <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 4
+  required_nvar <- 4
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -276,6 +319,8 @@ read_invico_old_cta_cte <- function(path){
     db <- DBI::dbReadTable(con, "CUENTASBANCARIAS")
   )
 
+  DBI::dbDisconnect(con)
+
   read_ncol <- ncol(db)
 
   if (read_ncol != required_ncol) {
@@ -285,22 +330,27 @@ read_invico_old_cta_cte <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      cta_cte = Cuenta,
-      descripcion = Descripcion,
-      banco = Banco,
-      cta_cte_ant = CuentaAnterior
+      cta_cte = .data$Cuenta,
+      descripcion = .data$Descripcion,
+      banco = .data$Banco,
+      cta_cte_ant = .data$CuentaAnterior
     )
 
-  DBI::dbDisconnect(con)
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_proveedores <- function(path){
+read_icaro_old_proveedores <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 7
+  required_nvar <- 7
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -317,6 +367,8 @@ read_invico_old_proveedores <- function(path){
     db <- DBI::dbReadTable(con, "PROVEEDORES")
   )
 
+  DBI::dbDisconnect(con)
+
   read_ncol <- ncol(db)
 
   if (read_ncol != required_ncol) {
@@ -326,25 +378,30 @@ read_invico_old_proveedores <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      cuit = CUIT,
-      descripcion = Descripcion,
-      codigo = Codigo,
-      domicilio = Domicilio,
-      localidad = Localidad,
-      telefono = Telefono,
-      iva_condicion = CondicionIVA
+      cuit = .data$CUIT,
+      descripcion = .data$Descripcion,
+      codigo = .data$Codigo,
+      domicilio = .data$Domicilio,
+      localidad = .data$Localidad,
+      telefono = .data$Telefono,
+      iva_condicion = .data$CondicionIVA
     )
 
-  DBI::dbDisconnect(con)
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
 }
 
-read_invico_old_retenciones <- function(path){
+read_icaro_old_retenciones <- function(path){
 
   required_ext <- "sqlite"
   required_ncol <- 4
+  required_nvar <- 4
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -361,6 +418,8 @@ read_invico_old_retenciones <- function(path){
     db <- DBI::dbReadTable(con, "RETENCIONES")
   )
 
+  DBI::dbDisconnect(con)
+
   read_ncol <- ncol(db)
 
   if (read_ncol != required_ncol) {
@@ -370,13 +429,17 @@ read_invico_old_retenciones <- function(path){
   db <- db %>%
     tibble::as_tibble() %>%
     dplyr::transmute(
-      nro_entrada = Comprobante,
-      tipo = Tipo,
-      cod_ret = Codigo,
-      importe = Importe
+      nro_entrada = .data$Comprobante,
+      tipo = .data$Tipo,
+      cod_ret = .data$Codigo,
+      importe = .data$Importe
     )
 
-  DBI::dbDisconnect(con)
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
 
   invisible(db)
 
