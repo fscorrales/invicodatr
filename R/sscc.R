@@ -27,6 +27,6 @@ rpw_sscc_banco_invico <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }

@@ -27,6 +27,6 @@ rpw_sgf_resumen_rend_prov <- function(path, write_csv = FALSE,
                  df = Ans, overwrite = TRUE)
   }
 
-  Ans
+  invisible(Ans)
 
 }
