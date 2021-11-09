@@ -31,7 +31,7 @@ read_icaro_old_obras <- function(path){
     tibble::as_tibble() %>%
     dplyr::transmute(
       obra = .data$Descripcion,
-      imputacion = .data$Imputacion,
+      estructura = .data$Imputacion,
       partida = .data$Partida,
       fuente = .data$Fuente,
       cuit = .data$CUIT,
@@ -89,7 +89,7 @@ read_icaro_old_carga <- function(path){
       nro_entrada = .data$Comprobante,
       tipo = .data$Tipo,
       obra = .data$Obra,
-      imputacion = .data$Imputacion,
+      estructura = .data$Imputacion,
       partida = .data$Partida,
       fuente = .data$Fuente,
       importe = .data$Importe,
