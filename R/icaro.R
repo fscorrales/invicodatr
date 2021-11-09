@@ -29,7 +29,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "obras",
+    write_sqlite("icaro_new", "obras",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -43,7 +43,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "carga",
+    write_sqlite("icaro_new", "carga",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -57,7 +57,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "programas",
+    write_sqlite("icaro_new", "programas",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -71,7 +71,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "subprogramas",
+    write_sqlite("icaro_new", "subprogramas",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -85,7 +85,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "proyectos",
+    write_sqlite("icaro_new", "proyectos",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -99,7 +99,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "actividades",
+    write_sqlite("icaro_new", "actividades",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -113,7 +113,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "ctas_ctes",
+    write_sqlite("icaro_new", "ctas_ctes",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -127,7 +127,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "proveedores",
+    write_sqlite("icaro_new", "proveedores",
                  df = Ans, overwrite = TRUE)
   }
 
@@ -141,7 +141,7 @@ transmute_icaro_old_to_new <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("icaro", "retenciones",
+    write_sqlite("icaro_new", "retenciones",
                  df = Ans, overwrite = TRUE)
   }
 
