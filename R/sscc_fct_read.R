@@ -3,7 +3,7 @@ read_sscc_banco_invico <- function(path){
   required_ext <- "csv"
   required_ncol <- 33
   required_title <- "Consulta General de Movimientos"
-  required_nvar <- 12
+  required_nvar <- 13
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -45,6 +45,7 @@ read_sscc_banco_invico <- function(path){
     dplyr::mutate_all(stringr::str_replace_all,
                       pattern = "[\r\n]", replacement = "") %>%
     dplyr::mutate(fecha = lubridate::dmy(.data$fecha),
+                  ejercicio = as.character(lubridate::year(.data$fecha)),
                   monto = round(readr::parse_number(.data$monto), 2),
                   libramiento = ifelse(is.na(.data$libramiento),
                                        "", .data$libramiento), #Decidí reemplazar NAs con ""
