@@ -12,12 +12,12 @@ div_path <- function(full_path){
 
 output_path <- function(){
 
-  # Ans <- stringr::str_split(getwd(), "/", simplify = T)
-  Ans <- div_path(getwd())
-  Ans <- Ans[1:(length(Ans)-1)] %>%
-    sapply(function(x) paste0(x, "/")) %>%
-    paste(collapse = "") %>%
-    paste0("R Output")
+  # Ans <- div_path(getwd())
+  # Ans <- Ans[1:(length(Ans)-1)] %>%
+  #   sapply(function(x) paste0(x, "/")) %>%
+  #   paste(collapse = "") %>%
+  #   paste0("R Output")
+  Ans <- paste0(dirname(getwd()), "/R Output")
 
 }
 
