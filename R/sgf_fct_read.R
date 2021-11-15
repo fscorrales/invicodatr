@@ -84,7 +84,7 @@ read_sgf_resumen_rend_prov <- function(path){
     dplyr::mutate_at(c("importe_neto", "gcias", "sellos", "iibb",
                        "suss", "salud", "mutual", "importe_bruto",
                        "invico", "otras", "seguro"),
-                     ~round(readr::parse_number(.)))
+                     ~round(readr::parse_number(.), 2))
 
   process_nvar <- ncol(db)
 

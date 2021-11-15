@@ -622,7 +622,7 @@ read_siif_deuda_flotante_tg_rdeu012b2_c <- function(path){
                   nro_origen = readr::parse_integer(.data$nro_origen)) %>%
     dplyr::mutate_at(c("monto", "saldo"),
                      ~round(readr::parse_number(.,
-                                                locale = readr::locale(decimal_mark = ","))))
+                                                locale = readr::locale(decimal_mark = ",")), 2))
 
   process_nvar <- ncol(db)
 
