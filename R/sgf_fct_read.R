@@ -80,7 +80,9 @@ read_sgf_resumen_rend_prov <- function(path){
                   movimiento = ifelse(.data$movimiento == "TRANSF.",
                                       "DEBITO", .data$movimiento),
                   cta_cte = ifelse(is.na(.data$cta_cte) & .data$beneficiario == "CREDITO ESPECIAL",
-                                   "130832-07", .data$cta_cte)) %>%
+                                   "130832-07", .data$cta_cte),
+                  cta_cte = ifelse(.data$cta_cte == "71-1-10270-5", "22110270-05",
+                                   .data$cta_cte)) %>%
     dplyr::mutate_at(c("importe_neto", "gcias", "sellos", "iibb",
                        "suss", "salud", "mutual", "importe_bruto",
                        "invico", "otras", "seguro"),
