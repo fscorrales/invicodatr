@@ -136,7 +136,8 @@ read_sgf_listado_prov <- function(path){
                  "telefono","cuit","condicion_iva")
 
   db <- db %>%
-    dplyr:: mutate(codigo = readr::parse_integer(.data$codigo))
+    dplyr:: mutate(codigo = readr::parse_integer(.data$codigo)) %>%
+    dplyr::filter(!is.na(.data$cuit))
 
   db$cuit <- gsub('-', '', db$cuit)
 
