@@ -30,3 +30,28 @@ rpw_sgf_resumen_rend_prov <- function(path, write_csv = FALSE,
   invisible(Ans)
 
 }
+
+#' Read, process and write SGF's Listado de Proveedores report
+#'
+#' Returns a cleaned tibble version of SGF's report. Also, a csv and sqlite
+#'  file could be exported.
+#'
+#' @inheritParams rpw_sgf_resumen_rend_prov
+#' @export
+rpw_sgf_listado_prov <- function(path, write_csv = FALSE,
+                                      write_sqlite = FALSE){
+
+  Ans <- purrr::map_df(path, ~ try_read(read_sgf_listado_prov(.x)))
+
+  if (write_csv == TRUE) {
+    write_csv(Ans, "Listado Provedores SGF.csv")
+  }
+
+  if (write_sqlite == TRUE) {
+    write_sqlite("sgf", "listado_prov",
+                 df = Ans, overwrite = TRUE)
+  }
+
+  invisible(Ans)
+
+}

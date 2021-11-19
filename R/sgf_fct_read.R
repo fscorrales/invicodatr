@@ -97,3 +97,55 @@ read_sgf_resumen_rend_prov <- function(path){
   invisible(db)
 
 }
+
+read_sgf_listado_prov <- function(path){
+
+  required_ext <- "csv"
+  required_ncol <- 18
+  required_title <- "Listado de Proveedores"
+  required_nvar <- 7
+
+  if (!file.exists(path)) {
+    abort_bad_path(path)
+  }
+
+  if (tools::file_ext(path) != required_ext) {
+    abort_bad_ext(path, required_ext)
+  }
+
+  suppressMessages(
+    db <- vroom::vroom(path, col_names = FALSE, delim = ",",
+                       col_types = vroom::cols(.default = "c"),
+                       locale = vroom::locale(encoding = 'ISO-8859-1'))
+  )
+
+  read_ncol <- ncol(db)
+
+  if (read_ncol != required_ncol) {
+    abort_bad_ncol(path, read_ncol, required_ncol)
+  }
+
+  read_title <- db$X2[1]
+
+  if (is.na(read_title) | (read_title != required_title)) {
+    abort_bad_title(path, read_title, required_title)
+  }
+
+  db <- db[,10:16]
+  names(db) <- c("codigo","descripcion","domicilio", "localidad",
+                 "telefono","cuit","condicion_iva")
+
+  db <- db %>%
+    dplyr:: mutate(codigo = readr::parse_integer(.data$codigo))
+
+  db$cuit <- gsub('-', '', db$cuit)
+
+  process_nvar <- ncol(db)
+
+  if (process_nvar != required_nvar) {
+    abort_bad_nvar(path, process_nvar, required_nvar)
+  }
+
+  invisible(db)
+
+}
