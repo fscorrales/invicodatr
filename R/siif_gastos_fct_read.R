@@ -337,9 +337,10 @@ read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- function(path){
                      nro_origen = readr::parse_integer(...5),
                      monto = readr::parse_number(...8,
                                                  locale = readr::locale(decimal_mark = ".")),
-                     mes =  readr::parse_integer(...11),
                      fecha = as.Date(readr::parse_integer(...14),
                                      origin = "1899-12-30"),
+                     mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                           lubridate::year(.data$fecha), sep = "/"),
                      partida =  ...17,
                      grupo = stringr::str_c(
                        stringr::str_sub(.data$partida, 1,1), "00", ""),
