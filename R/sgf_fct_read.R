@@ -3,7 +3,7 @@ read_sgf_resumen_rend_prov <- function(path){
   required_ext <- "csv"
   # required_ncol <- 33
   required_title <- "Resumen de Rendiciones (Detalle)"
-  required_nvar <- 18
+  required_nvar <- 20
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -77,6 +77,9 @@ read_sgf_resumen_rend_prov <- function(path){
   db <- db %>%
     dplyr::select(.data$origen, dplyr::everything()) %>%
     dplyr::mutate(fecha = lubridate::dmy(.data$fecha),
+                  ejercicio = as.character(lubridate::year(.data$fecha)),
+                  mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                        lubridate::year(.data$fecha), sep = "/"),
                   movimiento = ifelse(.data$movimiento == "TRANSF.",
                                       "DEBITO", .data$movimiento),
                   cta_cte = ifelse(is.na(.data$cta_cte) & .data$beneficiario == "CREDITO ESPECIAL",
