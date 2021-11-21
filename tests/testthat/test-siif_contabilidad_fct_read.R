@@ -3,6 +3,6 @@ test_that("reading rcocc31 returns a tibble", {
                     package = "invicodatr", mustWork = TRUE) %>%
     read_siif_mayor_contable_rcocc31()
   expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
-  expect_equal(ncol(df), 11)
+  expect_equal(ncol(df), 12)
 
 })

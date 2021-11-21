@@ -7,7 +7,7 @@ read_siif_mayor_contable_rcocc31 <- function(path){
   required_ext <- "xls"
   required_ncol <- 33
   required_title <- "DETALLES DE MOVIMIENTOS CONTABLES"
-  required_nvar <- 11
+  required_nvar <- 12
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -55,6 +55,8 @@ read_siif_mayor_contable_rcocc31 <- function(path){
                   fecha = dplyr::if_else(lubridate::year(.data$fecha_aprobado) == .data$ejercicio,
                                          .data$fecha_aprobado,
                                          lubridate::dmy(stringr::str_c("31/12/", .data$ejercicio))),
+                  mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                       lubridate::year(.data$fecha), sep = "/"),
                   nro_entrada = readr::parse_integer(.data$nro_entrada),
                   debitos = readr::parse_double(.data$debitos),
                   creditos = readr::parse_double(.data$creditos),
