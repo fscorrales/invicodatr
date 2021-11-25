@@ -59,7 +59,8 @@ rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 rpw_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
-                                     write_sqlite = FALSE){
+                                    write_sqlite = FALSE,
+                                    overwrite_sql = FALSE){
 
   Ans <- purrr::map_df(path, ~ try_read(read_siif_ppto_gtos_desc_rf610(.x)))
 
@@ -68,8 +69,24 @@ rpw_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("siif", "ppto_gtos_desc_rf610",
-                 df = Ans, overwrite = TRUE)
+
+    sql_db <- "siif"
+    sql_table <- "ppto_gtos_desc_rf610"
+    sql_key_var <- "ejercicio"
+
+    if (overwrite_sql == TRUE) {
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, overwrite = TRUE)
+    } else {
+      filter_var <- dplyr::select(Ans, .data[[sql_key_var]]) %>%
+        unique()
+      execute_sqlite(sql_db,
+                     paste0("DELETE FROM ", sql_table, " ",
+                            "WHERE ejercicio = ?"),
+                     params = list(filter_var[[sql_key_var]]))
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, append = TRUE)
+    }
   }
 
   invisible(Ans)
