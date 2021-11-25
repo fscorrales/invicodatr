@@ -29,17 +29,18 @@ rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
 
     sql_db <- "siif"
     sql_table <- "ppto_gtos_fte_rf602"
+    sql_key_var <- "ejercicio"
 
     if (overwrite_sql == TRUE) {
       write_sqlite(sql_db, sql_table,
                    df = Ans, overwrite = TRUE)
     } else {
-      years <- dplyr::select(Ans, .data$ejercicio) %>%
+      filter_var <- dplyr::select(Ans, .data[[sql_key_var]]) %>%
         unique()
       execute_sqlite(sql_db,
                      paste0("DELETE FROM ", sql_table, " ",
                             "WHERE ejercicio = ?"),
-                     params = years)
+                     params = filter_var[[sql_key_var]])
       write_sqlite(sql_db, sql_table,
                    df = Ans, append = TRUE)
     }
