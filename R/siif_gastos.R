@@ -40,7 +40,7 @@ rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
       execute_sqlite(sql_db,
                      paste0("DELETE FROM ", sql_table, " ",
                             "WHERE ejercicio = ?"),
-                     params = filter_var[[sql_key_var]])
+                     params = list(filter_var[[sql_key_var]]))
       write_sqlite(sql_db, sql_table,
                    df = Ans, append = TRUE)
     }
