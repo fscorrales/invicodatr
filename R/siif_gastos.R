@@ -11,10 +11,13 @@ NULL
 #'  assigned, a dataframe that combine all of them will be return.
 #' @param write_csv logical. Should a csv file be generated?
 #' @param write_sqlite logical. Should a sqlite file be generated?
+#' @param overwrite_sql logical. Should the sql table be overwritten? Default
+#'  set to FALSE meaning that the table would be appended.
 #'
 #' @export
 rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
-                                    write_sqlite = FALSE){
+                                   write_sqlite = FALSE,
+                                   overwrite_sql = FALSE){
 
   Ans <- purrr::map_df(path, ~ try_read(read_siif_ppto_gtos_fte_rf602(.x)))
 
@@ -23,8 +26,24 @@ rpw_siif_ppto_gtos_fte <- function(path = NULL, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("siif", "ppto_gtos_fte_rf602",
-                 df = Ans, overwrite = TRUE)
+
+    sql_db <- "siif"
+    sql_table <- "ppto_gtos_fte_rf602"
+
+    if (overwrite_sql == TRUE) {
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, overwrite = TRUE)
+    } else {
+      years <- dplyr::select(Ans, .data$ejercicio) %>%
+        unique()
+      execute_sqlite(sql_db,
+                     paste0("DELETE FROM ", sql_table, " ",
+                            "WHERE ejercicio = ?"),
+                     params = years)
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, append = TRUE)
+    }
+
   }
 
   invisible(Ans)
