@@ -229,7 +229,7 @@ read_siif_comprobantes_gtos_partida_rcg01_par <- function(path){
   required_ext <- "xls"
   required_ncol <- 19
   required_title <- "Resumen de Comprobantes de Gastos (excepto REM) con detalle de partidas"
-  required_nvar <- 18
+  required_nvar <- 19
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -270,6 +270,8 @@ read_siif_comprobantes_gtos_partida_rcg01_par <- function(path){
                      clase_gto =  ...7,
                      fecha = as.Date(readr::parse_integer(...8),
                                      origin = "1899-12-30"),
+                     mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                           lubridate::year(.data$fecha), sep = "/"),
                      partida =  ...10,
                      grupo = stringr::str_c(
                        stringr::str_sub(.data$partida, 1,1), "00", ""),

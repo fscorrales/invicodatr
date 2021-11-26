@@ -100,7 +100,8 @@ rpw_siif_ppto_gtos_desc <- function(path, write_csv = FALSE,
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 rpw_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
-                                     write_sqlite = FALSE){
+                                       write_sqlite = FALSE,
+                                       overwrite_sql = FALSE){
 
   Ans <- purrr::map_df(path, ~ try_read(read_siif_comprobantes_gtos_rcg01_uejp(.x)))
 
@@ -108,7 +109,26 @@ rpw_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
     write_csv(Ans, "Comprobantes Gastos Ingresados SIIF (rcg01_uejp).csv")
   }
 
+  if (write_sqlite == TRUE) {
 
+    sql_db <- "siif"
+    sql_table <- "comprobantes_gtos_rcg01_uejp"
+    sql_key_var <- "mes"
+
+    if (overwrite_sql == TRUE) {
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, overwrite = TRUE)
+    } else {
+      filter_var <- dplyr::select(Ans, .data[[sql_key_var]]) %>%
+        unique()
+      execute_sqlite(sql_db,
+                     paste0("DELETE FROM ", sql_table, " ",
+                            "WHERE mes = ?"),
+                     params = list(filter_var[[sql_key_var]]))
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, append = TRUE)
+    }
+  }
 
   if (write_sqlite == TRUE) {
     write_sqlite("siif", "comprobantes_gtos_rcg01_uejp",

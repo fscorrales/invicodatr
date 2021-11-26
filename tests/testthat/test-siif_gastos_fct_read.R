@@ -30,7 +30,7 @@ test_that("reading rcg01_par returns a tibble", {
                     package = "invicodatr", mustWork = TRUE) %>%
     read_siif_comprobantes_gtos_partida_rcg01_par()
   expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
-  expect_equal(ncol(df), 18)
+  expect_equal(ncol(df), 19)
 
 })
 
