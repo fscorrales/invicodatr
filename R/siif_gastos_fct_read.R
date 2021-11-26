@@ -423,7 +423,7 @@ read_siif_resumen_fdos_rfondo07tp <- function(path){
   required_ext <- "xls"
   required_ncol <- 20
   required_title <- "RESUMEN DE FONDOS DEL EJERCICIO"
-  required_nvar <- 8
+  required_nvar <- 9
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -463,6 +463,8 @@ read_siif_resumen_fdos_rfondo07tp <- function(path){
                      ejercicio = .data$ejercicio,
                      fecha = as.Date(readr::parse_integer(...10),
                                      origin = "1899-12-30"),
+                     mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                           lubridate::year(.data$fecha), sep = "/"),
                      nro_fondo = readr::parse_integer(...3),
                      glosa = ...6,
                      ingresos = readr::parse_number(...12,

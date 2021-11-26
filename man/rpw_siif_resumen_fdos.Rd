@@ -4,7 +4,12 @@
 \alias{rpw_siif_resumen_fdos}
 \title{Read, process and write SIIF's rfondo07tp report}
 \usage{
-rpw_siif_resumen_fdos(path, write_csv = FALSE, write_sqlite = FALSE)
+rpw_siif_resumen_fdos(
+  path,
+  write_csv = FALSE,
+  write_sqlite = FALSE,
+  overwrite_sql = FALSE
+)
 }
 \arguments{
 \item{path}{a character vector of full path names. If more than one path is
@@ -13,6 +18,9 @@ assigned, a dataframe that combine all of them will be return.}
 \item{write_csv}{logical. Should a csv file be generated?}
 
 \item{write_sqlite}{logical. Should a sqlite file be generated?}
+
+\item{overwrite_sql}{logical. Should the sql table be overwritten? Default
+set to FALSE meaning that the table would be appended.}
 }
 \description{
 Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
