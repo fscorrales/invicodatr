@@ -184,7 +184,8 @@ rpw_siif_comprobantes_gtos_partida <- function(path, write_csv = FALSE,
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 rpw_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
-                                                write_sqlite = FALSE){
+                                                   write_sqlite = FALSE,
+                                                   overwrite_sql = FALSE){
 
   Ans <- purrr::map_df(path, ~ try_read(read_siif_comprobantes_gtos_gpo_partida_gto_rpa03g(.x)))
 
@@ -193,8 +194,29 @@ rpw_siif_comprobantes_gtos_gpo_partida <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("siif", "comprobantes_gtos_gpo_partida_gto_rpa03g",
-                 df = Ans, overwrite = TRUE)
+
+    sql_db <- "siif"
+    sql_table <- "comprobantes_gtos_gpo_partida_gto_rpa03g"
+    sql_key_var_1 <- "mes"
+    sql_key_var_2 <- "grupo"
+
+    if (overwrite_sql == TRUE) {
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, overwrite = TRUE)
+    } else {
+      filter_var <- dplyr::select(Ans, .data[[sql_key_var_1]],
+                                  .data[[sql_key_var_2]]) %>%
+        unique()
+      execute_sqlite(sql_db,
+                     paste0("DELETE FROM ", sql_table, " ",
+                            "WHERE mes = ? ",
+                            "AND grupo = ?"),
+                     params = list(filter_var[[sql_key_var_1]],
+                                   filter_var[[sql_key_var_2]]))
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, append = TRUE)
+    }
+
   }
 
   invisible(Ans)
@@ -295,11 +317,6 @@ rpw_siif_deuda_flotante <- function(path, write_csv = FALSE,
     }
 
   }
-
-  # if (write_sqlite == TRUE) {
-  #   write_sqlite("siif", "deuda_flotante_rdeu012",
-  #                df = Ans, overwrite = TRUE)
-  # }
 
   invisible(Ans)
 
