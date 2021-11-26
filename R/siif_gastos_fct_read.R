@@ -159,7 +159,7 @@ read_siif_comprobantes_gtos_rcg01_uejp <- function(path){
   required_ext <- "xls"
   required_ncol <- 19
   required_title <- "Resumen Diario de Comprobantes de Gastos Ingresados"
-  required_nvar <- 18
+  required_nvar <- 19
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -203,6 +203,8 @@ read_siif_comprobantes_gtos_rcg01_uejp <- function(path){
     dplyr::filter(.data$nro_entrada != is.na(.data$nro_entrada)) %>%
     dplyr::mutate(fecha = as.Date(readr::parse_integer(.data$fecha),
                                   origin = "1899-12-30"),
+                  mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                        lubridate::year(.data$fecha), sep = "/"),
                   nro_entrada = readr::parse_integer(.data$nro_entrada),
                   nro_origen = readr::parse_integer(.data$nro_origen),
                   monto = readr::parse_number(.data$monto,

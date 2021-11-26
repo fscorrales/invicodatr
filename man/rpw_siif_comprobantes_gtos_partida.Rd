@@ -7,7 +7,8 @@
 rpw_siif_comprobantes_gtos_partida(
   path,
   write_csv = FALSE,
-  write_sqlite = FALSE
+  write_sqlite = FALSE,
+  overwrite_sql = FALSE
 )
 }
 \arguments{
@@ -17,6 +18,9 @@ assigned, a dataframe that combine all of them will be return.}
 \item{write_csv}{logical. Should a csv file be generated?}
 
 \item{write_sqlite}{logical. Should a sqlite file be generated?}
+
+\item{overwrite_sql}{logical. Should the sql table be overwritten? Default
+set to FALSE meaning that the table would be appended.}
 }
 \description{
 Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
