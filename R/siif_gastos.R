@@ -130,11 +130,6 @@ rpw_siif_comprobantes_gtos <- function(path, write_csv = FALSE,
     }
   }
 
-  if (write_sqlite == TRUE) {
-    write_sqlite("siif", "comprobantes_gtos_rcg01_uejp",
-                 df = Ans, overwrite = TRUE)
-  }
-
   invisible(Ans)
 
 }
