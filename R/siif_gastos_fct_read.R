@@ -367,7 +367,7 @@ read_siif_retenciones_por_codigo_rao01 <- function(path){
   required_ext <- "xls"
   required_ncol <- 20
   required_title <- "Provincia de Corrientes"
-  required_nvar <- 7
+  required_nvar <- 8
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -400,6 +400,8 @@ read_siif_retenciones_por_codigo_rao01 <- function(path){
     dplyr::filter(...1 != is.na(...1)) %>%
     dplyr::transmute(fecha = as.Date(readr::parse_integer(...12),
                                      origin = "1899-12-30"),
+                     mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                           lubridate::year(.data$fecha), sep = "/"),
                      ejercicio = as.character(lubridate::year(.data$fecha)),
                      nro_entrada = readr::parse_integer(...1),
                      cod_retencion = ...4,
