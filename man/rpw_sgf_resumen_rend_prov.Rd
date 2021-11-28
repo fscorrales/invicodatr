@@ -4,7 +4,12 @@
 \alias{rpw_sgf_resumen_rend_prov}
 \title{Read, process and write SGF's Resumen de Rendiciones por proveedor report}
 \usage{
-rpw_sgf_resumen_rend_prov(path, write_csv = FALSE, write_sqlite = FALSE)
+rpw_sgf_resumen_rend_prov(
+  path,
+  write_csv = FALSE,
+  write_sqlite = FALSE,
+  overwrite_sql = FALSE
+)
 }
 \arguments{
 \item{path}{a character vector of full path names. If more than one path is
@@ -13,6 +18,9 @@ assigned, a dataframe that combine all of them will be return.}
 \item{write_csv}{logical. Should a csv file be generated?}
 
 \item{write_sqlite}{logical. Should a sqlite file be generated?}
+
+\item{overwrite_sql}{logical. Should the sql table be overwritten? Default
+set to FALSE meaning that the table would be appended.}
 }
 \description{
 Returns a cleaned tibble version of SGF's report. Also, a csv and sqlite

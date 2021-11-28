@@ -11,10 +11,13 @@ NULL
 #'  assigned, a dataframe that combine all of them will be return.
 #' @param write_csv logical. Should a csv file be generated?
 #' @param write_sqlite logical. Should a sqlite file be generated?
+#' @param overwrite_sql logical. Should the sql table be overwritten? Default
+#'  set to FALSE meaning that the table would be appended.
 #'
 #' @export
 rpw_sgf_resumen_rend_prov <- function(path, write_csv = FALSE,
-                                  write_sqlite = FALSE){
+                                      write_sqlite = FALSE,
+                                      overwrite_sql = FALSE){
 
   Ans <- purrr::map_df(path, ~ try_read(read_sgf_resumen_rend_prov(.x)))
 
@@ -23,8 +26,29 @@ rpw_sgf_resumen_rend_prov <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("sgf", "resumen_rend_prov",
-                 df = Ans, overwrite = TRUE)
+
+    sql_db <- "siif"
+    sql_table <- "resumen_rend_prov"
+    sql_key_var_1 <- "mes"
+    sql_key_var_2 <- "origen"
+
+    if (overwrite_sql == TRUE) {
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, overwrite = TRUE)
+    } else {
+      filter_var <- dplyr::select(Ans, .data[[sql_key_var_1]],
+                                  .data[[sql_key_var_2]]) %>%
+        unique()
+      execute_sqlite(sql_db,
+                     paste0("DELETE FROM ", sql_table, " ",
+                            "WHERE mes = ? ",
+                            "AND origen = ?"),
+                     params = list(filter_var[[sql_key_var_1]],
+                                   filter_var[[sql_key_var_2]]))
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, append = TRUE)
+    }
+
   }
 
   invisible(Ans)
