@@ -27,7 +27,7 @@ rpw_sgf_resumen_rend_prov <- function(path, write_csv = FALSE,
 
   if (write_sqlite == TRUE) {
 
-    sql_db <- "siif"
+    sql_db <- "sgf"
     sql_table <- "resumen_rend_prov"
     sql_key_var_1 <- "mes"
     sql_key_var_2 <- "origen"
