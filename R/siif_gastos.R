@@ -374,7 +374,8 @@ rpw_siif_deuda_flotante <- function(path, write_csv = FALSE,
 #' @inheritParams rpw_siif_ppto_gtos_fte
 #' @export
 rpw_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
-                                       write_sqlite = FALSE){
+                                       write_sqlite = FALSE,
+                                       overwrite_sql = FALSE){
 
   Ans <- purrr::map_df(path, ~ try_read(read_siif_deuda_flotante_tg_rdeu012b2_c(.x)))
 
@@ -383,8 +384,25 @@ rpw_siif_deuda_flotante_tg <- function(path, write_csv = FALSE,
   }
 
   if (write_sqlite == TRUE) {
-    write_sqlite("siif", "deuda_flotante_tg_rdeu012b2_c",
-                 df = Ans, overwrite = TRUE)
+
+    sql_db <- "siif"
+    sql_table <- "deuda_flotante_tg_rdeu012b2_c"
+    sql_key_var <- "nes_hasta"
+
+    if (overwrite_sql == TRUE) {
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, overwrite = TRUE)
+    } else {
+      filter_var <- dplyr::select(Ans, .data[[sql_key_var]]) %>%
+        unique()
+      execute_sqlite(sql_db,
+                     paste0("DELETE FROM ", sql_table, " ",
+                            "WHERE nes_hasta = ?"),
+                     params = list(filter_var[[sql_key_var]]))
+      write_sqlite(sql_db, sql_table,
+                   df = Ans, append = TRUE)
+    }
+
   }
 
   Ans
