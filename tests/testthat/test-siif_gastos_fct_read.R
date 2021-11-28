@@ -84,6 +84,6 @@ test_that("reading rtr03 returns a tibble", {
                     package = "invicodatr", mustWork = TRUE) %>%
     read_siif_pagos_rtr03()
   expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
-  expect_equal(ncol(df), 13)
+  expect_equal(ncol(df), 14)
 
 })

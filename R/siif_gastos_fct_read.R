@@ -648,7 +648,7 @@ read_siif_pagos_rtr03 <- function(path){
   required_ext <- "xls"
   required_ncol <- 42
   required_title <- "- RENDICION DE CUENTAS -"
-  required_nvar <- 13
+  required_nvar <- 14
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -700,6 +700,8 @@ read_siif_pagos_rtr03 <- function(path){
     dplyr::filter(!is.na(.data$ejercicio_origen)) %>%
     dplyr::mutate(fecha_pago = as.Date(readr::parse_integer(.data$fecha_pago),
                                        origin = "1899-12-30"),
+                  mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha_pago), 2, pad = "0"),
+                                        lubridate::year(.data$fecha_pago), sep = "/"),
                   monto = round(readr::parse_double(.data$monto), 2),
                   ingresos = round(readr::parse_double(.data$ingresos), 2))
 
@@ -737,7 +739,7 @@ read_siif_pagos_rtr03 <- function(path){
   #   mutate(Tipo = ifelse(Monto < 0, "ANP", Tipo))
 
   db <- db %>%
-    dplyr::select(.data$ejercicio, .data$nro_entrada, .data$tipo,
+    dplyr::select(.data$ejercicio, .data$mes, .data$nro_entrada, .data$tipo,
                   .data$fuente, .data$fecha_pago, .data$cta_cte,
                   .data$cuit, .data$cta_cte_pago, .data$cuit_pago,
                   .data$beneficiario, .data$monto, dplyr::everything())
