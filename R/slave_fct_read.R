@@ -7,7 +7,7 @@ read_slave_honorarios <- function(path){
   required_ext <- "xlsx"
   required_ncol <- 14
   # required_title <- "DETALLES DE MOVIMIENTOS CONTABLES"
-  required_nvar <- 16
+  required_nvar <- 17
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -35,8 +35,8 @@ read_slave_honorarios <- function(path){
   #   abort_bad_title(path, read_title, required_title)
   # }
 
-  names(db) <- c("fecha", "proveedor", "sellos", "seguro",
-                 "nro_entrada", "tipo", "monto_bruto",
+  names(db) <- c("fecha", "beneficiario", "sellos", "seguro",
+                 "nro_entrada", "tipo", "importe_bruto",
                  "iibb", "lp", "otras_ret", "anticipo",
                  "descuento", "actividad", "partida")
 
@@ -45,11 +45,21 @@ read_slave_honorarios <- function(path){
                                        origin = "1899-12-30"),
                   ejercicio = as.character(lubridate::year(.data$fecha)),
                   mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
-                                       lubridate::year(.data$fecha), sep = "/")) %>%
-    dplyr::mutate_at(c("sellos", "seguro", "monto_bruto", "iibb", "lp",
+                                       lubridate::year(.data$fecha), sep = "/"),
+                  estructura = paste0(stringr::str_sub(.data$actividad, 0, 2),
+                                     "-00", stringr::str_sub(.data$actividad, -6))) %>%
+    dplyr::mutate_at(c("sellos", "seguro", "importe_bruto", "iibb", "lp",
                        "otras_ret", "anticipo", "descuento"),
                      ~round(readr::parse_number(.,
-                                                locale = readr::locale(decimal_mark = ",")), 2))
+                                                locale = readr::locale(decimal_mark = ",")), 2)) %>%
+    dplyr::mutate(importe_neto = .data$importe_bruto - .data$sellos - .data$seguro -
+                    .data$iibb, .data$lp, .data$otras_ret, .data$anticipo, .data$descuento,
+                  importe_neto = round(.data$importe_neto, 2)) %>%
+    dplyr::filter(!stringr::str_detect(.data$nro_entrada, "NoSIIF")) %>%
+    dplyr::select(-.data$actividad) %>%
+    dplyr::select(.data$ejercicio, .data$mes, .data$fecha, .data$nro_entrada,
+                  .data$tipo, .data$beneficiario, .data$estructura, .data$partida,
+                  .data$importe_bruto, .data$importe_neto, dplyr::everything())
 
   process_nvar <- ncol(db)
 
