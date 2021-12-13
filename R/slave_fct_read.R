@@ -50,8 +50,7 @@ read_slave_honorarios <- function(path){
                                      "-00", stringr::str_sub(.data$actividad, -6))) %>%
     dplyr::mutate_at(c("sellos", "seguro", "importe_bruto", "iibb", "lp",
                        "otras_ret", "anticipo", "descuento"),
-                     ~round(readr::parse_number(.,
-                                                locale = readr::locale(decimal_mark = ",")), 2)) %>%
+                     ~round(readr::parse_number(.), 2)) %>%
     dplyr::mutate(importe_neto = .data$importe_bruto - .data$sellos - .data$seguro -
                     .data$iibb, .data$lp, .data$otras_ret, .data$anticipo, .data$descuento,
                   importe_neto = round(.data$importe_neto, 2)) %>%
