@@ -60,6 +60,16 @@ read_slave_honorarios <- function(path){
                   .data$tipo, .data$beneficiario, .data$estructura, .data$partida,
                   .data$importe_bruto, .data$importe_neto, dplyr::everything())
 
+  #Arreglo temporal hasta crear Slave.R
+  db <- db %>%
+    dplyr::mutate(
+      nro_entrada = dplyr::case_when(
+        nro_entrada == "00917/21" ~ "00918/21",
+        nro_entrada == "00000/21" ~ "02040/21",
+        TRUE ~ nro_entrada
+      )
+    )
+
   process_nvar <- ncol(db)
 
   if (process_nvar != required_nvar) {
