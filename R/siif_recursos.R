@@ -54,3 +54,51 @@ rpw_siif_comprobantes_rec <- function(path = NULL, write_csv = FALSE,
   invisible(Ans)
 
 }
+
+#' Read, process and write SIIF's ri102 report
+#'
+#' Returns a cleaned tibble version of SIIF's report. Also, a csv and sqlite
+#'  file could be exported.
+#'
+#' @inheritParams rpw_siif_comprobantes_rec
+#' @export
+
+rpw_siif_ppto_rec <- function(path = NULL, write_csv = FALSE,
+                                      write_sqlite = FALSE,
+                                      overwrite_sql = FALSE){
+
+  Ans <- purrr::map_df(path, ~ try_read(read_siif_ppto_rec_ri102(.x)))
+
+  if (nrow(Ans) != 0 ) {
+
+    if (write_csv == TRUE) {
+      write_csv(Ans, "Ejecucion Presupuesto Recursos SIIF (ri102).csv")
+    }
+
+    if (write_sqlite == TRUE) {
+
+      sql_db <- "siif"
+      sql_table <- "ppto_rec_ri102"
+      sql_key_var <- "ejercicio"
+
+      if (overwrite_sql == TRUE) {
+        write_sqlite(sql_db, sql_table,
+                     df = Ans, overwrite = TRUE)
+      } else {
+        filter_var <- dplyr::select(Ans, .data[[sql_key_var]]) %>%
+          unique()
+        execute_sqlite(sql_db,
+                       paste0("DELETE FROM ", sql_table, " ",
+                              "WHERE ejercicio = ?"),
+                       params = list(filter_var[[sql_key_var]]))
+        write_sqlite(sql_db, sql_table,
+                     df = Ans, append = TRUE)
+      }
+
+    }
+
+  }
+
+  invisible(Ans)
+
+}
