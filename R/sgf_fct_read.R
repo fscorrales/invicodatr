@@ -106,7 +106,7 @@ read_sgf_resumen_rend_obra <- function(path){
   required_ext <- "csv"
   # required_ncol <- 33
   required_title <- "Resumen de Rendiciones (por Obras)"
-  required_nvar <- 18
+  required_nvar <- 19
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -142,17 +142,64 @@ read_sgf_resumen_rend_obra <- function(path){
   origen_vec <- stringr::str_split(origen_vec, " = ", simplify = T)[2]
   origen_vec <- stringr::str_remove_all(origen_vec, '\\"')
 
-  names_vec <- c("origen", "beneficiario", "libramiento_sgf", "destino", "fecha",
+  names_vec <- c("obra" ,"origen", "beneficiario", "libramiento_sgf", "destino", "fecha",
                  "movimiento", "importe_neto", "gcias", "sellos", "tl","iibb",
                  "suss", "seguro", "salud", "mutual", "importe_bruto")
 
   db_mod <- purrr::map_dfc(names_vec, stats::setNames,
                            object = list(character()))
 
-  db <- db %>%
-    dplyr::mutate(origen = origen_vec)
+  # db <- db %>%
+  #   dplyr::mutate(origen = origen_vec)
 
-  if (origen_vec == "OBRAS") {
+  if (origen_vec == "EPAM") {
+    db <- db %>%
+      dplyr::select(-X1:-X25) %>%
+      dplyr::mutate(obra = ifelse(is.na(X54), NA, X26)) %>%
+      dplyr::transmute(origen = origen_vec,
+                      obra = zoo::na.locf(.data$obra, na.rm = F),
+                      obra = ifelse(!is.na(.data$obra), .data$obra, X39),
+                      beneficiario = ifelse(is.na(X54), X26, X37),
+                      libramiento_sgf = ifelse(is.na(X54), X27, X38),
+                      destino = ifelse(is.na(X54), X28, X39),
+                      fecha = ifelse(is.na(X54), X29, X40),
+                      movimiento = ifelse(is.na(X54), X30, X41),
+                      importe_neto = ifelse(is.na(X54), X31, X42),
+                      gcias = ifelse(is.na(X54), X32, X43),
+                      sellos = ifelse(is.na(X54), X33, X44),
+                      tl = ifelse(is.na(X54), X34, X45),
+                      iibb = ifelse(is.na(X54), X35, X46),
+                      suss = ifelse(is.na(X54), X36, X47),
+                      seguro = ifelse(is.na(X54), X37, X48),
+                      salud = ifelse(is.na(X54), X38, X49),
+                      mutual = ifelse(is.na(X54), X39, X50),
+                      importe_bruto = ifelse(is.na(X54), X40, X51))
+      # dplyr::select(-X41:-X64) %>%
+      # dplyr::rename(beneficiario = X26, libramiento_sgf = X27, destino = X28,
+      #               fecha = X29, movimiento = X30,
+      #               importe_neto = X31, gcias = X32, sellos = X33,
+      #               tl = X34, iibb = X35, suss = X36, seguro = X37,
+      #               salud = X38, mutual = X39, importe_bruto = X40)
+
+    db <- db_mod %>%
+      dplyr::full_join(db, by = colnames(db))
+
+    db <- db %>%
+      dplyr::mutate(fecha = lubridate::dmy(.data$fecha),
+                    ejercicio = as.character(lubridate::year(.data$fecha)),
+                    mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                          lubridate::year(.data$fecha), sep = "/"),
+                    obra = ifelse(.data$obra == "0.00",
+                                  .data$destino, .data$obra),
+                    movimiento = ifelse(.data$movimiento == "2",
+                                        "DEBITO", .data$movimiento)) %>%
+      dplyr::mutate_at(c("importe_neto", "gcias", "sellos", "tl", "iibb",
+                         "suss", "seguro", "salud", "mutual", "importe_bruto"),
+                       ~round(readr::parse_number(.), 2)) %>%
+      dplyr::select(.data$ejercicio, .data$mes, .data$origen,
+                    .data$obra, dplyr::everything())
+
+  } else {
     # db <- db %>%
     #   dplyr::select(-X1:-X23) %>%
     #   dplyr::select(-X37:-X47) %>%
@@ -162,31 +209,7 @@ read_sgf_resumen_rend_obra <- function(path){
     #                 iibb = X32, suss = X33,
     #                 invico = X34, otras = X35, importe_bruto = X29)
 
-  } else {
-    db <- db %>%
-      dplyr::select(-X1:-X25) %>%
-      dplyr::select(-X41:-X64) %>%
-      dplyr::rename(beneficiario = X26, libramiento_sgf = X27, destino = X28,
-                    fecha = X29, movimiento = X30,
-                    importe_neto = X31, gcias = X32, sellos = X33,
-                    tl = X34, iibb = X35, suss = X36, seguro = X37,
-                    salud = X38, mutual = X39, importe_bruto = X40)
   }
-
-  db <- db_mod %>%
-    dplyr::full_join(db, by = colnames(db))
-
-  db <- db %>%
-    dplyr::select(.data$origen, dplyr::everything()) %>%
-    dplyr::mutate(fecha = lubridate::dmy(.data$fecha),
-                  ejercicio = as.character(lubridate::year(.data$fecha)),
-                  mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
-                                        lubridate::year(.data$fecha), sep = "/"),
-                  movimiento = ifelse(.data$movimiento == "2",
-                                      "DEBITO", .data$movimiento)) %>%
-    dplyr::mutate_at(c("importe_neto", "gcias", "sellos", "tl", "iibb",
-                       "suss", "seguro", "salud", "mutual", "importe_bruto"),
-                     ~round(readr::parse_number(.), 2))
 
   process_nvar <- ncol(db)
 

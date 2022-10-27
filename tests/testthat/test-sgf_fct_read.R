@@ -12,7 +12,7 @@ test_that("reading resumen_rend_obra returns a tibble", {
                     package = "invicodatr", mustWork = TRUE) %>%
     read_sgf_resumen_rend_obra()
   expect_s3_class(df, c("tbl_df", "tbl", "data.frame"))
-  expect_equal(ncol(df), 18)
+  expect_equal(ncol(df), 19)
 
 })
 
