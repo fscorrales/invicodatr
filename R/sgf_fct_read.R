@@ -174,42 +174,48 @@ read_sgf_resumen_rend_obra <- function(path){
                       salud = ifelse(is.na(X54), X38, X49),
                       mutual = ifelse(is.na(X54), X39, X50),
                       importe_bruto = ifelse(is.na(X54), X40, X51))
-      # dplyr::select(-X41:-X64) %>%
-      # dplyr::rename(beneficiario = X26, libramiento_sgf = X27, destino = X28,
-      #               fecha = X29, movimiento = X30,
-      #               importe_neto = X31, gcias = X32, sellos = X33,
-      #               tl = X34, iibb = X35, suss = X36, seguro = X37,
-      #               salud = X38, mutual = X39, importe_bruto = X40)
-
-    db <- db_mod %>%
-      dplyr::full_join(db, by = colnames(db))
-
-    db <- db %>%
-      dplyr::mutate(fecha = lubridate::dmy(.data$fecha),
-                    ejercicio = as.character(lubridate::year(.data$fecha)),
-                    mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
-                                          lubridate::year(.data$fecha), sep = "/"),
-                    obra = ifelse(.data$obra == "0.00",
-                                  .data$destino, .data$obra),
-                    movimiento = ifelse(.data$movimiento == "2",
-                                        "DEBITO", .data$movimiento)) %>%
-      dplyr::mutate_at(c("importe_neto", "gcias", "sellos", "tl", "iibb",
-                         "suss", "seguro", "salud", "mutual", "importe_bruto"),
-                       ~round(readr::parse_number(.), 2)) %>%
-      dplyr::select(.data$ejercicio, .data$mes, .data$origen,
-                    .data$obra, dplyr::everything())
 
   } else {
-    # db <- db %>%
-    #   dplyr::select(-X1:-X23) %>%
-    #   dplyr::select(-X37:-X47) %>%
-    #   dplyr::rename(beneficiario = X24, cta_cte = X25,
-    #                 libramiento_sgf = X26, fecha = X27, movimiento = X28,
-    #                 importe_neto = X36, gcias = X30, sellos = X31,
-    #                 iibb = X32, suss = X33,
-    #                 invico = X34, otras = X35, importe_bruto = X29)
+    db <- db %>%
+      dplyr::select(-X1:-X25) %>%
+      utils::tail(-1) %>%
+      dplyr::transmute(origen = origen_vec,
+                       obra = X28, #Igualamos a destino
+                       beneficiario = X26,
+                       libramiento_sgf = X27,
+                       destino = X28,
+                       fecha = X29,
+                       movimiento = X30,
+                       importe_neto = X31,
+                       gcias = X32,
+                       sellos = X33,
+                       tl = X34,
+                       iibb = X35,
+                       suss = X36,
+                       seguro = X37,
+                       salud = X38,
+                       mutual = X39,
+                       importe_bruto = X40)
 
   }
+
+  db <- db_mod %>%
+    dplyr::full_join(db, by = colnames(db))
+
+  db <- db %>%
+    dplyr::mutate(fecha = lubridate::dmy(.data$fecha),
+                  ejercicio = as.character(lubridate::year(.data$fecha)),
+                  mes =  stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
+                                        lubridate::year(.data$fecha), sep = "/"),
+                  obra = ifelse(.data$obra == "0.00",
+                                .data$destino, .data$obra),
+                  movimiento = ifelse(.data$movimiento == "2",
+                                      "DEBITO", .data$movimiento)) %>%
+    dplyr::mutate_at(c("importe_neto", "gcias", "sellos", "tl", "iibb",
+                       "suss", "seguro", "salud", "mutual", "importe_bruto"),
+                     ~round(readr::parse_number(.), 2)) %>%
+    dplyr::select(.data$ejercicio, .data$mes, .data$origen,
+                  .data$obra, dplyr::everything())
 
   process_nvar <- ncol(db)
 
