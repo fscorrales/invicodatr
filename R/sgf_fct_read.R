@@ -89,7 +89,12 @@ read_sgf_resumen_rend_prov <- function(path){
     dplyr::mutate_at(c("importe_neto", "gcias", "sellos", "iibb",
                        "suss", "salud", "mutual", "importe_bruto",
                        "invico", "otras", "seguro"),
-                     ~round(readr::parse_number(.), 2))
+                     ~round(readr::parse_number(.), 2)) %>%
+    # El SGF no suma la retención del 3% al Bruto en el caso del origen EPAM
+    dplyr::mutate(importe_bruto = ifelse(.data$origen == "EPAM",
+                                         .data$importe_bruto + .data$invico,
+                                         .data$importe_bruto))
+    # # # # # # # # # # # # # ##
 
   process_nvar <- ncol(db)
 
