@@ -3,7 +3,7 @@ read_sgf_resumen_rend_prov <- function(path){
   required_ext <- "csv"
   # required_ncol <- 33
   required_title <- "Resumen de Rendiciones (Detalle)"
-  required_nvar <- 19
+  required_nvar <- 20
 
   if (!file.exists(path)) {
     abort_bad_path(path)
@@ -41,7 +41,7 @@ read_sgf_resumen_rend_prov <- function(path){
 
   names_vec <- c("origen", "beneficiario", "cta_cte", "libramiento_sgf", "fecha",
                  "movimiento", "importe_neto", "gcias", "sellos", "iibb",
-                 "suss", "invico", "otras", "importe_bruto",
+                 "suss", "invico", "otras", "importe_bruto", "destino",
                  "seguro", "salud", "mutual")
 
   db_mod <- purrr::map_dfc(names_vec, stats::setNames,
@@ -62,13 +62,13 @@ read_sgf_resumen_rend_prov <- function(path){
 
   } else {
     db <- db %>%
-      dplyr::select(-X1:-X25) %>%
-      dplyr::select(-X41:-X54) %>%
-      dplyr::rename(beneficiario = X26, cta_cte = X27,
-                    libramiento_sgf = X28, fecha = X29, movimiento = X30,
-                    importe_neto = X31, gcias = X32, sellos = X33,
-                    iibb = X34, suss = X35, invico = X36, seguro = X37,
-                    salud = X38, mutual = X39, importe_bruto = X40)
+      dplyr::select(-X1:-X26) %>%
+      dplyr::select(-X43:-X66) %>%
+      dplyr::rename(beneficiario = X27, destino = X28, cta_cte = X29,
+                    libramiento_sgf = X30, fecha = X31, movimiento = X32,
+                    importe_neto = X33, gcias = X34, sellos = X35,
+                    iibb = X36, suss = X37, invico = X38, seguro = X39,
+                    salud = X40, mutual = X41, importe_bruto = X42)
   }
 
   db <- db_mod %>%
